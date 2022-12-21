@@ -136,10 +136,16 @@ main section.search-bar {
   gap: 5px;
 }
 
-main form {
+.search-wrapper {
   display: grid;
   grid-template-columns: 1fr auto;
 }
+
+.search-options {
+  padding: 3px 0;
+  text-align: right;
+}
+
 
 main form input {
   padding: 7px 15px;
