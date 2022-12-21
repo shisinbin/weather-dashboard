@@ -4,7 +4,7 @@
   --primaryMuted: #B0BEC5;
   --secondary: #FFFF00;
   --text: #333;
-  --background: #F0F0F0;
+  --background: #FFFFFF; /*#F0F0F0*/
   --highlight: #FFEB3B;
 }
 
@@ -214,4 +214,47 @@ main .forecast .forecast-day {
 
 main .forecast .forecast-day > *:not(:last-child) {
   margin-bottom: 8px;
+}
+
+.hour {
+  padding: 15px 20px;
+  background: #eef0fb;
+  text-align: center;
+}
+.hour > *:not(:last-child) {
+  margin-bottom: 15px;
+}
+.day > *:not(:first-child) {
+  border-left: 1px solid #333;
+}
+
+.hour.now {
+  min-width: 200px;
+}
+
+.day-tab {
+  text-align: center;
+  padding: 10px;
+  border-top: 1px solid #888;
+  border-bottom: 1px solid #888;
+  border-left: 1px solid #888;
+  min-width: 80px;
+  min-height: 80px;
+  cursor:pointer;
+  background: #F0F0F0;
+  border-radius: 1px;
+  margin: 10px 0;
+}
+
+.day-tab:last-of-type {
+  border-right: 1px solid #888;
+}
+
+.day-tab:hover {
+  background: var(--background);
+}
+
+.day-date {
+  /* background: #dededf; */
+  padding: 5px 5px;
 }
