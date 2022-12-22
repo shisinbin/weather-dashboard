@@ -32,16 +32,20 @@
       <section class="search-bar column">
         <form>
           <div class="search-wrapper">
-            <input class="search" type="text" id="search-text" placeholder="Enter a city" />
+            <input
+              class="search"
+              type="text"
+              id="search-text"
+              placeholder="Enter a city"
+            />
             <button><i class="fas fa-search"></i></button>
           </div>
           <div class="search-options">
             <label for="gb">UK</label>
-            <input type="radio" name="country" value="gb" id="gb" checked>
+            <input type="radio" name="country" value="gb" id="gb" checked />
             <label for="anywhere">Anywhere</label>
-            <input type="radio" name="country" value="anywhere" id="anywhere">
+            <input type="radio" name="country" value="anywhere" id="anywhere" />
           </div>
-          
         </form>
         <hr />
         <div class="search-history column">
@@ -54,9 +58,9 @@
       <section class="forecast column">
         <h2>London</h2>
         <div class="row days">
-          <div class="day-tab column justify-space-between">
+          <div class="day-tab column">
             <p>Today</p>
-            <div class="row align-center justify-space-between">
+            <div class="row align-center">
               <i class="fas fa-cloud-rain"></i>
               <div class="column">
                 <p>5C</p>
@@ -64,39 +68,46 @@
               </div>
             </div>
           </div>
-          <div class="day-tab column justify-space-between">
-            <p>Mon 19</p>
-            <div class="row align-center justify-space-between">
-              <i class="fas fa-cloud-rain"></i>
-              <div class="column">
-                <p>5°</p>
-                <p><small>2°</small></p>
-              </div>
-            </div>
-          </div>
-          <div class="day-tab column justify-space-between">
-            <p>Tue 20</p>
-            <div class="row align-center justify-space-between">
-              <i class="fas fa-cloud-rain"></i>
-              <div class="column">
+
+          <div class="day-tab column">
+            <p class="tab-date">Mon 19</p>
+            <div class="tab-details row align-center">
+              <i class="fas fa-cloud-rain text-center flex-one"></i>
+              <div class="column text-center flex-one">
                 <p>5C</p>
                 <p>2C</p>
               </div>
             </div>
+            <p class="tab-description" style="display: none">Light rain</p>
           </div>
-          <div class="day-tab column justify-space-between">
-            <p>Wed 21</p>
-            <div class="row align-center justify-space-between">
-              <i class="fas fa-cloud-rain"></i>
-              <div class="column">
+
+          <div class="day-tab column">
+            <p class="tab-date">Tue 20</p>
+            <div class="tab-details row align-center">
+              <i class="fas fa-cloud-rain text-center flex-one"></i>
+              <div class="column text-center flex-one">
                 <p>5C</p>
                 <p>2C</p>
               </div>
             </div>
+            <p class="tab-description" style="display: none">Light rain</p>
           </div>
-          <div class="day-tab column justify-space-between">
+
+          <div class="day-tab column selected">
+            <p class="tab-date">Wed 21</p>
+            <div class="tab-details row align-center">
+              <i class="fas fa-cloud-rain text-center flex-one"></i>
+              <div class="column text-center flex-one">
+                <p>5C</p>
+                <p>2C</p>
+              </div>
+            </div>
+            <p class="tab-description" style=>Light rain</p>
+          </div>
+
+          <div class="day-tab column">
             <p>Thu 22</p>
-            <div class="row align-center justify-space-between">
+            <div class="row align-center">
               <i class="fas fa-cloud-rain"></i>
               <div class="column">
                 <p>5C</p>
@@ -104,9 +115,9 @@
               </div>
             </div>
           </div>
-          <div class="day-tab column justify-space-between">
+          <div class="day-tab column">
             <p>Fri 23</p>
-            <div class="row align-center justify-space-between">
+            <div class="row align-center">
               <i class="fas fa-cloud-rain"></i>
               <div class="column">
                 <p>5C</p>
@@ -118,11 +129,11 @@
 
         <div class="day-breakdown column">
           <h3 class="day-date">Monday 19</h3>
-          <div class="day row">
-            <div class="hour">
+          <div class="day">
+            <div class="hour column">
               <p>0000</p>
               <p><i class="fas fa-cloud-rain"></i></p>
-              <p>1°</p>
+              <div class="temp"><p>1°</p></div>
               <p>16 <i class="fas fa-long-arrow-alt-right"></i></p>
               <p>85%</p>
             </div>
@@ -175,9 +186,14 @@
               <p>16 <i class="fas fa-long-arrow-alt-right"></i></p>
               <p>85%</p>
             </div>
+
+            <div class="hour column hour-details">
+              <p><small>Wind (mph)</small></p>
+              <p><small>Humidity</small></p>
+            </div>
           </div>
         </div>
-
+      </section>
     </main>
 
     <!-- jquery -->

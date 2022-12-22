@@ -1,8 +1,12 @@
 var apiKey = '0e8f67bf6ac0e37689d7edea5f37f808';
+var recentSearches = [];
+const MAX_NUM_OF_RECENTS = 6;
 
 // app logic goes here
 var forecastEl = $('.forecast');
 var formEl = $('form');
+
+var searchHistoryEl = $('.search-history');
 
 // function getNumTodayForecasts(unixTime) {
 //   var hourNow = Number(moment(unixTime, 'X').format('H'));
@@ -42,13 +46,51 @@ function convertMetersPerSecondToMilesPerHour(metersPerSecond) {
   return metersPerSecond * 2.23693629;
 }
 
+function renderRecentSearches() {
+  searchHistoryEl.html('');
+
+  recentSearches = JSON.parse(localStorage.getItem('weather_search_history'));
+
+  if (recentSearches === null) {
+    recentSearches = [];
+    console.log('no recent searches');
+    return;
+  }
+
+  for (var city of recentSearches) {
+    searchHistoryEl.append(`
+      <button value="${city}" class="history-button">
+        <span class="button-text">${city}</span>
+        <span class="close">x</span>
+      </button>
+    `);
+  }
+}
+
+function switchForecast(element) {
+  var tab = $(element);
+  var id = tab.attr('id').split('-')[1];
+  var tabToChange = $(`#tab-${id}`);
+
+  // firstly, remove the selected class from all tabs
+  element.parent().children().removeClass('selected');
+  element.parent().children().children('.tab-description').addClass('hide');
+  tabToChange.addClass('selected');
+  tabToChange.children('.tab-description').removeClass('hide');
+
+  forecastEl.children('.day-breakdown').addClass('hide');
+  forecastEl.children(`#breakdown-${id}`).removeClass('hide');
+}
+
 function showForecast(weatherDetails) {
   // Clear the old html
   forecastEl.html('');
 
   // add the city name
   forecastEl.append(
-    `<h2>${weatherDetails.name + ', ' + weatherDetails.countryCode}</h2>`
+    `<h2 class="city-name">${
+      weatherDetails.name + ', ' + weatherDetails.countryCode
+    }</h2>`
   );
 
   // Come up with an array of all days covered in forecast
@@ -77,16 +119,85 @@ function showForecast(weatherDetails) {
 
     var todaysMoment = moment(thisDaysForecasts[0].unix, 'X');
 
+    var today = {
+      dateDay: Number(todaysMoment.format('D')),
+      dateShort: todaysMoment.format('ddd D'),
+      dateLong: todaysMoment.format('dddd D'),
+    };
+
+    console.log(thisDaysForecasts);
+
+    if (i === 0) {
+      today.dateShort = 'Today';
+      switch (true) {
+        case thisDaysForecasts.length === 8:
+          today.icon = thisDaysForecasts[4].icon;
+          today.description = thisDaysForecasts[4].description;
+          break;
+        case thisDaysForecasts.length === 7:
+          today.icon = thisDaysForecasts[3].icon;
+          today.description = thisDaysForecasts[3].description;
+          break;
+        case thisDaysForecasts.length === 6:
+          today.icon = thisDaysForecasts[2].icon;
+          today.description = thisDaysForecasts[2].description;
+          break;
+        case thisDaysForecasts.length === 5:
+          console.log(thisDaysForecasts[1]);
+          today.icon = thisDaysForecasts[1].icon;
+          today.description = thisDaysForecasts[1].description;
+          break;
+        default:
+          today.icon = thisDaysForecasts[0].icon;
+          today.description = thisDaysForecasts[0].description;
+      }
+    }
+
+    if (i === days.length - 1) {
+      switch (true) {
+        case thisDaysForecasts.length === 1:
+          today.icon = thisDaysForecasts[0].icon;
+          today.description = thisDaysForecasts[0].description;
+          break;
+        case thisDaysForecasts.length === 2:
+          today.icon = thisDaysForecasts[1].icon;
+          today.description = thisDaysForecasts[1].description;
+          break;
+        case thisDaysForecasts.length === 3:
+          today.icon = thisDaysForecasts[2].icon;
+          today.description = thisDaysForecasts[2].description;
+          break;
+        case thisDaysForecasts.length === 4:
+          today.icon = thisDaysForecasts[3].icon;
+          today.description = thisDaysForecasts[3].description;
+          break;
+        default:
+          today.icon = thisDaysForecasts[4].icon;
+          today.description = thisDaysForecasts[4].description;
+      }
+    }
+
+    if (i > 0 && i < days.length - 1) {
+      today.icon = thisDaysForecasts[4].icon;
+      today.description = thisDaysForecasts[4].description;
+    }
+
+    today.description =
+      today.description.charAt(0).toUpperCase() + today.description.slice(1);
+
+    today.iconurl = 'http://openweathermap.org/img/w/' + today.icon + '.png';
+
     //initialise tracking variables
     var high = -99;
     var low = 99;
 
     // create a breakdown element for this day
     var breakdownEl = $('<div>');
-    breakdownEl.addClass('day-breakdown column');
+    breakdownEl.addClass('day-breakdown column hide');
+    breakdownEl.attr('id', `breakdown-${today.dateDay}`);
     // add today's date
     breakdownEl.append(`
-      <h3 class="day-date">${todaysMoment.format('dddd D')}</h3>
+      <h3 class="day-date">${today.dateLong}</h3>
     `);
     var timeEl = $('<div>');
     timeEl.addClass('day row');
@@ -107,10 +218,12 @@ function showForecast(weatherDetails) {
 
       // add time deets
       timeEl.append(`
-        <div class="hour">
+        <div class="hour column">
           <p>${thisDaysForecasts[i].hour}</p>
-          <img src="${iconurl}">
-          <p>${Math.round(thisDaysForecasts[i].temp)}°</p>
+          <div><img src="${iconurl}"></div>
+          <div class="temp"><p>${Math.round(
+            thisDaysForecasts[i].temp
+          )}°</p></div>
           <p>${Math.round(
             thisDaysForecasts[i].windSpeed
           )} <i class="fas fa-arrow-circle-down" style="transform: rotate(${
@@ -123,24 +236,37 @@ function showForecast(weatherDetails) {
       `);
     }
 
+    timeEl.append(`
+      <div class="hour column hour-details">
+        <p><small>Wind (mph)</small></p>
+        <p><small>Humidity</small></p>
+      </div>
+    `);
+
+    console.log(today);
     // now that you've iterated through each time period for this day,
     // you can add a new day tab which gives the high and low temp
     tabsEl.append(`
-      <div class="day-tab column justify-space-between">
-        <p>${todaysMoment.format('ddd D')}</p>
-        <div class="row align-center justify-space-between">
-          <i class="fas fa-cloud-rain"></i>
-          <div class="column">
+      <div class="day-tab column" id="tab-${today.dateDay}">
+        <p class="f-1">${today.dateShort}</p>
+        <div class="tab-details row align-center">
+          <div class="f-1"><img src="${today.iconurl}"></div>
+          <div class="column text-center f-1">
             <p>${Math.round(high)}°</p>
             <p><small>${Math.round(low)}°</small></p>
           </div>
         </div>
+        <p class="tab-description f-1 hide">${today.description}</p>
       </div>
     `);
 
     // finally, we can add the breakdown element to the forecast
     forecastEl.append(breakdownEl);
   }
+  // sort out bigging up tab, and showing breakdown for this day
+  $(`#breakdown-${start}`).removeClass('hide');
+  $(`#tab-${start}`).addClass('selected');
+  $(`#tab-${start}`).children('.tab-description').removeClass('hide');
 }
 
 function doForecast(city, countryParam) {
@@ -209,6 +335,7 @@ function doForecast(city, countryParam) {
 }
 
 function init() {
+  // add form event listener
   formEl.submit(function (event) {
     event.preventDefault();
 
@@ -225,6 +352,11 @@ function init() {
       countryParam = '';
     }
     doForecast(searchText, countryParam);
+  });
+
+  // tab event listener
+  forecastEl.on('click', '.day-tab', function () {
+    switchForecast($(this));
   });
 }
 
