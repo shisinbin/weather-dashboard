@@ -46,6 +46,40 @@ function convertMetersPerSecondToMilesPerHour(metersPerSecond) {
   return metersPerSecond * 2.23693629;
 }
 
+function updateRecentSearches(newSuccessfulSearch, countryCode) {
+  var combinedSearch =
+    newSuccessfulSearch.toLowerCase() + ',' + countryCode.toLowerCase();
+  // Check to see if search already exists
+  var index = recentSearches.indexOf(`${combinedSearch}`);
+  if (index !== -1) {
+    console.log('we here');
+    // If it does, remove it from recent searches
+    recentSearches.splice(index, 1);
+  }
+
+  console.log('now we here');
+
+  // Add this new search to beginning of list
+  recentSearches.unshift(combinedSearch);
+
+  console.log(`this is recent searches: ${recentSearches}`);
+
+  // Check if the length isn't over the max allowed
+  if (recentSearches.length > MAX_NUM_OF_RECENTS) {
+    // If it is, remove the 'oldest' search
+    recentSearches.pop();
+  }
+
+  // Now update local storage
+  localStorage.setItem(
+    'weather_search_history',
+    JSON.stringify(recentSearches)
+  );
+
+  // Finally render the recent searches list on the page correctly
+  renderRecentSearches();
+}
+
 function renderRecentSearches() {
   searchHistoryEl.html('');
 
@@ -57,9 +91,11 @@ function renderRecentSearches() {
     return;
   }
 
-  for (var city of recentSearches) {
+  for (var cityAndCode of recentSearches) {
+    var city = cityAndCode.split(',')[0];
+    city = city[0].toUpperCase() + city.slice(1);
     searchHistoryEl.append(`
-      <button value="${city}" class="history-button">
+      <button value="${cityAndCode}" class="history-button">
         <span class="button-text">${city}</span>
         <span class="close">x</span>
       </button>
@@ -329,6 +365,7 @@ function doForecast(city, countryParam) {
         console.log(weatherDetails);
 
         showForecast(weatherDetails);
+        updateRecentSearches(weatherDetails.name, weatherDetails.countryCode);
       });
     });
   });
@@ -358,6 +395,34 @@ function init() {
   forecastEl.on('click', '.day-tab', function () {
     switchForecast($(this));
   });
+
+  // recent search event listener
+  searchHistoryEl.on('click', 'button', function () {
+    var searchParams = $(this).val().split(',');
+    searchParams[1] = ',' + searchParams[1];
+    console.log(searchParams);
+    doForecast(searchParams[0], searchParams[1]);
+  });
+
+  searchHistoryEl.on('click', '.close', function (event) {
+    event.stopPropagation();
+    var cityToRemove = $(this).parent().val();
+    var index = recentSearches.indexOf(cityToRemove);
+    if (index !== -1) {
+      recentSearches.splice(index, 1);
+      if (recentSearches.length === 0) {
+        localStorage.removeItem('weather_search_history');
+      } else {
+        localStorage.setItem(
+          'weather_search_history',
+          JSON.stringify(recentSearches)
+        );
+      }
+    }
+    renderRecentSearches();
+  });
+
+  renderRecentSearches();
 }
 
 init();
