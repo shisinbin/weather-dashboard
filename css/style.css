@@ -114,7 +114,8 @@ header h3, header nav i {
 }
 header nav i {
   font-size: 1.2rem;
-  padding: 0 2px;
+  /* padding: 0 2px; */
+  padding-left: 5px;
 }
 header nav i:last-of-type {
   padding-right: 0;

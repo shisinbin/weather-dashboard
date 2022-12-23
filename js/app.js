@@ -1,5 +1,5 @@
 var apiKey = '0e8f67bf6ac0e37689d7edea5f37f808';
-const MAX_NUM_OF_RECENTS = 10;
+const MAX_NUM_OF_RECENTS = 8;
 
 // Grab HTML elements
 var forecastEl = $('.forecast');
