@@ -48,7 +48,7 @@ function setTempHeight() {
     var min = $(this).find('.min').text();
     min = Number(min.match(/-?\d+/)[0]);
 
-    console.log(`id: ${id}, max: ${max}, min: ${min}`);
+    // console.log(`id: ${id}, max: ${max}, min: ${min}`);
 
     // Use the id to find the breakdown element to target
     var breakdownToTarget = $(`#breakdown-${id}`);
@@ -57,7 +57,6 @@ function setTempHeight() {
 
     // For each hour, set the height
     breakdownToTarget.find('.hour').each(function (index) {
-      console.log(index);
       if (index === maxLoops) {
         return;
       }
@@ -79,9 +78,9 @@ function setTempHeight() {
       var height = percentage / 2;
       height += 25;
 
-      console.log(
-        `temp: ${temp}, percentage: ${percentage}, height: ${height}`
-      );
+      // console.log(
+      //   `temp: ${temp}, percentage: ${percentage}, height: ${height}`
+      // );
 
       // Now update the css for this p element
       paraToTarget.css('bottom', `${height}%`);
@@ -195,8 +194,6 @@ function showForecast(weatherDetails) {
     days.push(i);
   }
 
-  console.log(days);
-
   // Create the days tab row and append it to forecastEl
   var tabsEl = $('<div>');
   tabsEl.addClass('row days');
@@ -204,7 +201,6 @@ function showForecast(weatherDetails) {
 
   // For each day, do stuff
   for (let i = 0; i < days.length; i++) {
-    console.log(`day: ${i}`);
     // filter forecasts by this day
     var thisDaysForecasts = weatherDetails.forecasts.filter(
       (forecast) => forecast.dayMonth === days[i]
@@ -217,8 +213,6 @@ function showForecast(weatherDetails) {
       dateShort: todaysMoment.format('ddd D'),
       dateLong: todaysMoment.format('dddd D'),
     };
-
-    console.log(thisDaysForecasts);
 
     if (i === 0) {
       // if the first day is the user's day as well, then show 'Today' in day tab
@@ -239,7 +233,6 @@ function showForecast(weatherDetails) {
           today.description = thisDaysForecasts[2].description;
           break;
         case thisDaysForecasts.length === 5:
-          console.log(thisDaysForecasts[1]);
           today.icon = thisDaysForecasts[1].icon;
           today.description = thisDaysForecasts[1].description;
           break;
@@ -348,7 +341,6 @@ function showForecast(weatherDetails) {
       </div>
     `);
 
-    console.log(today);
     // now that you've iterated through each time period for this day,
     // you can add a new day tab which gives the high and low temp
     tabsEl.append(`
@@ -445,7 +437,7 @@ function doForecast(city, countryParam) {
 
         weatherDetails.forecasts.unshift(weatherDetails.now);
         delete weatherDetails.now;
-        console.log(weatherDetails);
+        // console.log(weatherDetails);
 
         showForecast(weatherDetails);
 
@@ -485,7 +477,7 @@ function init() {
   searchHistoryEl.on('click', 'button', function () {
     var searchParams = $(this).val().split(',');
     searchParams[1] = ',' + searchParams[1];
-    console.log(searchParams);
+    // console.log(searchParams);
     doForecast(searchParams[0], searchParams[1]);
     $('.search').val(`${searchParams[0]}`);
     $('.search').select();
