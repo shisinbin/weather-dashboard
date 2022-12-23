@@ -323,12 +323,6 @@ function showForecast(weatherDetails) {
       `);
     }
     // "fas fa-long-arrow-alt-down" "fas fa-arrow-circle-down"
-    // var timezoneString = '';
-    // if (weatherDetails.timezone > 0) {
-    //   timezoneString = '+' + moment(weatherDetails.timezone).format('HHmm');
-    // } else {
-    //   timezoneString = moment(weatherDetails.timezone).format('HHmm');
-    // }
 
     timeEl.append(`
       <div class="hour column hour-details">
@@ -369,6 +363,7 @@ function showForecast(weatherDetails) {
   $(`#breakdown-${start}`).removeClass('hide');
   $(`#tab-${start}`).addClass('selected');
   $(`#tab-${start}`).children('.tab-description').removeClass('hide');
+  $('.search').select();
   setTempHeight();
 }
 
@@ -478,6 +473,8 @@ function init() {
     searchParams[1] = ',' + searchParams[1];
     console.log(searchParams);
     doForecast(searchParams[0], searchParams[1]);
+    $('.search').val(`${searchParams[0]}`);
+    $('.search').select();
   });
 
   // remove search history item

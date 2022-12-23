@@ -8,42 +8,44 @@
   --highlight: #FFEB3B;
 }
 
-/* #E0E0E0 
+/** CoLoUr IdEaS... **/
+/*
+#E0E0E0 
 #ECEFF1
 #CFD8DC
-#E8E8E8 */
+#E8E8E8
 
-/* #00FF00 (lime green)
+#00FF00 (lime green)
 #4CAF50 (mid-tone green)
 #8BC34A (muted, earthy green)
 #006400 (dark green)
-#008080 (teal) */
+#008080 (teal)
 
-/* #FFEB3B (bright yellow)
+#FFEB3B (bright yellow)
 #FFC107 (mid-tone yellow)
 #FF9800 (orange)
 #9E9D24 (muted, earthy yellow)
-#FFFF00 (pure yellow) */
+#FFFF00 (pure yellow)
 
-/* #FAFAFA (light, neutral gray)
+#FAFAFA (light, neutral gray)
 #F5F5F5 (slightly warmer, creamier gray)
 #F0F0F0 (very light, almost white, gray)
 #ECECEC (pale, cool gray)
-#E8E8E8 (very pale, almost white, gray) */
+#E8E8E8 (very pale, almost white, gray)
 
-/* #795548 (muted, earthy brown)
+#795548 (muted, earthy brown)
 #6D4C41 (dark, rich brown)
 #9E9D24 (muted, earthy brown with a slight green undertone)
 #A1887F (mid-tone brown with a slight gray undertone)
-#D7CCC8 (pale, almost white, brown with a slight gray undertone) */
+#D7CCC8 (pale, almost white, brown with a slight gray undertone)
 
-/* #2196F3 (bright, vibrant blue)
+#2196F3 (bright, vibrant blue)
 #03A9F4 (lighter, muted blue)
 #00BCD4 (pale, almost white, blue with a slight green undertone)
 #3F51B5 (dark, rich blue with a slight purple undertone)
-#9C27B0 (deep, rich blue with a slight red undertone) */
+#9C27B0 (deep, rich blue with a slight red undertone)
 
-/* #795548 (muted, earthy brown)
+#795548 (muted, earthy brown)
 #6D4C41 (dark, rich brown)
 #9E9D24 (muted, earthy brown with a slight green undertone)
 #A1887F (mid-tone brown with a slight gray undertone)
@@ -59,6 +61,7 @@
 body {
   font-family: sans-serif;
   background: var(--background);
+  /* To help get the footer to stay at bottom */
   height: 100vh;
   display: flex;
 }
@@ -115,6 +118,10 @@ header nav i {
 }
 header nav i:last-of-type {
   padding-right: 0;
+}
+
+header nav i:hover {
+  color: var(--highlight);
 }
 
 .header-wrapper {
@@ -312,6 +319,7 @@ main section.forecast {
   padding: 5px 5px;
   margin-top: 20px;
   margin-bottom: 5px;
+  color: var(--text);
 }
 
 .tab-details {
@@ -350,6 +358,8 @@ main section.forecast {
 
 .city-name {
   padding: 5px 5px;
+  margin-bottom: 10px;
+  color: var(--text);
 }
 
 .spacer {
