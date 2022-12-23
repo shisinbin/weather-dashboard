@@ -1,15 +1,16 @@
 var apiKey = '0e8f67bf6ac0e37689d7edea5f37f808';
-var recentSearches = [];
 const MAX_NUM_OF_RECENTS = 10;
 
-// app logic goes here
+// Grab HTML elements
 var forecastEl = $('.forecast');
 var formEl = $('form');
-
 var searchHistoryEl = $('.search-history');
 
-/* Helper function that converts a Unix timestamp representing a timezone shift
-   to a readable format, such as '-0500' or '+0530' */
+// Initialise an array to help with local storage logic
+var recentSearches = [];
+
+// Helper function that converts a Unix timestamp representing a timezone shift
+// to a readable format, such as '-0500' or '+0530'
 function unixToReadableTimeShift(unixTimestamp) {
   // Convert the unix timestamp (in seconds) to hours
   var timeShiftInHours = unixTimestamp / 3600;
@@ -29,13 +30,13 @@ function unixToReadableTimeShift(unixTimestamp) {
   return readableTimeShift;
 }
 
-// Helper function
+// Helper function to convert metres/sec to miles/hour
 function convertMetersPerSecondToMilesPerHour(metersPerSecond) {
   return metersPerSecond * 2.23693629;
 }
 
-/* Function that sets the height of every temperature element in a forecast
-   relative to its parent div, based on the min and max temp for that day */
+// Function that sets the height of every temperature element in a forecast
+// relative to its parent div, based on the min and max temp for that day
 function setTempHeight() {
   // For each day tab, get the id, max and min
   $('.day-tab').each(function () {
@@ -73,8 +74,8 @@ function setTempHeight() {
         percentage = Math.round(((temp - min) / (max - min)) * 100);
       }
 
-      /* As I want the height to be between 25% and 75% from the bottom
-         of the parent div, this logic helps achieve this */
+      // As I want the height to be between 25% and 75% from the bottom
+      // of the parent div, this logic helps achieve this
       var height = percentage / 2;
       height += 25;
 
@@ -82,12 +83,14 @@ function setTempHeight() {
         `temp: ${temp}, percentage: ${percentage}, height: ${height}`
       );
 
-      // Now update the css for
+      // Now update the css for this p element
       paraToTarget.css('bottom', `${height}%`);
     });
   });
 }
 
+// Function that clears forecast HTML and provides feedback when user
+// puts in a search term that the API doesn't recognise
 function noResultsFound() {
   forecastEl.html('');
   var feedbackEl = $('<div>');
@@ -96,23 +99,20 @@ function noResultsFound() {
   forecastEl.append(feedbackEl);
 }
 
+// Function that takes in a successful search term and its corresponding country code
+// and adds this to local storage
 function updateRecentSearches(newSuccessfulSearch, countryCode) {
   var combinedSearch =
     newSuccessfulSearch.toLowerCase() + ',' + countryCode.toLowerCase();
   // Check to see if search already exists
   var index = recentSearches.indexOf(`${combinedSearch}`);
   if (index !== -1) {
-    console.log('we here');
     // If it does, remove it from recent searches
     recentSearches.splice(index, 1);
   }
 
-  console.log('now we here');
-
   // Add this new search to beginning of list
   recentSearches.unshift(combinedSearch);
-
-  console.log(`this is recent searches: ${recentSearches}`);
 
   // Check if the length isn't over the max allowed
   if (recentSearches.length > MAX_NUM_OF_RECENTS) {
@@ -130,6 +130,7 @@ function updateRecentSearches(newSuccessfulSearch, countryCode) {
   renderRecentSearches();
 }
 
+// Function that uses local storage to help render the recent searches bar
 function renderRecentSearches() {
   searchHistoryEl.html('');
 
@@ -141,7 +142,7 @@ function renderRecentSearches() {
   }
 
   for (var cityAndCode of recentSearches) {
-    var displayOnlyCity = cityAndCode.split(',')[0];
+    var displayOnlyCity = cityAndCode.split(',')[0]; // could use this instead of below
     var displayBoth = cityAndCode.split(',').join(', ');
     searchHistoryEl.append(`
       <button value="${cityAndCode}" class="history-button">
@@ -152,26 +153,33 @@ function renderRecentSearches() {
   }
 }
 
+// Function to show both the day tab and breakdown for the tab that was clicked
 function switchForecast(element) {
   var tab = $(element);
+
+  // Get the id, and grab the element that needs to be changed
   var id = tab.attr('id').split('-')[1];
   var tabToChange = $(`#tab-${id}`);
 
-  // firstly, remove the selected class from all tabs
+  // globally remove the selected class to every tab and hide every description
   element.parent().children().removeClass('selected');
   element.parent().children().children('.tab-description').addClass('hide');
+
+  // 'expand' the appropriate tab and shows its description
   tabToChange.addClass('selected');
   tabToChange.children('.tab-description').removeClass('hide');
 
+  // globally hide all breakdowns before unhiding the appropriate one
   forecastEl.children('.day-breakdown').addClass('hide');
   forecastEl.children(`#breakdown-${id}`).removeClass('hide');
 }
 
+// Function that handles the logic involved for translating received data and displaying it
 function showForecast(weatherDetails) {
   // Clear the old html
   forecastEl.html('');
 
-  // add the city name
+  // add the city name to h2 element
   forecastEl.append(
     `<h2 class="city-name">${
       weatherDetails.name + ', ' + weatherDetails.countryCode
@@ -370,6 +378,7 @@ function showForecast(weatherDetails) {
   setTempHeight();
 }
 
+// Function that handles the API calls, filtering the data required about 41 forecasts
 function doForecast(city, countryParam) {
   var weatherDetails = {};
   // var numTodayForecasts;
@@ -439,14 +448,16 @@ function doForecast(city, countryParam) {
         console.log(weatherDetails);
 
         showForecast(weatherDetails);
+
         updateRecentSearches(weatherDetails.name, weatherDetails.countryCode);
       });
     });
   });
 }
 
+// Function to load on page load
 function init() {
-  // add form event listener
+  // Form submit event listener
   formEl.submit(function (event) {
     event.preventDefault();
 
@@ -465,12 +476,12 @@ function init() {
     doForecast(searchText, countryParam);
   });
 
-  // tab event listener
+  // Day tab event listener
   forecastEl.on('click', '.day-tab', function () {
     switchForecast($(this));
   });
 
-  // recent search event listener
+  // Recent search event listener
   searchHistoryEl.on('click', 'button', function () {
     var searchParams = $(this).val().split(',');
     searchParams[1] = ',' + searchParams[1];
@@ -480,7 +491,7 @@ function init() {
     $('.search').select();
   });
 
-  // remove search history item
+  // Removing recent search event listener
   searchHistoryEl.on('click', '.close', function (event) {
     // stop the other event on the button from happening
     event.stopPropagation();
