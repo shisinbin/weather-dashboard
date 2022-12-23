@@ -213,7 +213,7 @@ function showForecast(weatherDetails) {
     console.log(thisDaysForecasts);
 
     if (i === 0) {
-      today.dateShort = 'Today';
+      // today.dateShort = 'Today';
       switch (true) {
         case thisDaysForecasts.length === 8:
           today.icon = thisDaysForecasts[4].icon;
