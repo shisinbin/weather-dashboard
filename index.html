@@ -30,33 +30,44 @@
 
     <main>
       <section class="search-bar column">
-        <form>
+        <form class="column">
           <div class="search-wrapper">
             <input
               class="search"
               type="text"
               id="search-text"
               placeholder="Enter a city"
+              spellcheck="false"
             />
             <button><i class="fas fa-search"></i></button>
           </div>
-          <div class="search-options">
-            <label for="gb">UK</label>
-            <input type="radio" name="country" value="gb" id="gb" checked />
-            <label for="anywhere">Anywhere</label>
-            <input type="radio" name="country" value="anywhere" id="anywhere" />
+
+          <div class="radio-container row">
+            <div class="radio-item row align-center">
+              <label for="anywhere">Anywhere</label>
+              <input
+                type="radio"
+                name="country"
+                value="anywhere"
+                id="anywhere"
+                checked
+              />
+            </div>
+            <div class="radio-item row align-center">
+              <label for="gb">UK</label>
+              <input type="radio" name="country" value="gb" id="gb" />
+            </div>
           </div>
         </form>
-        <hr />
-        <div class="search-history column">
-          <button>London</button>
-          <button>Paris</button>
-          <button>New York</button>
-        </div>
+
+        <div class="search-history column"></div>
       </section>
 
       <section class="forecast column">
-        <h2>London</h2>
+        <div class="feedback">
+          <p>Use the search box on the left to get started.</p>
+        </div>
+        <!-- <h2>London</h2>
         <div class="row days">
           <div class="day-tab column">
             <p>Today</p>
@@ -192,7 +203,7 @@
               <p><small>Humidity</small></p>
             </div>
           </div>
-        </div>
+        </div> -->
       </section>
     </main>
 

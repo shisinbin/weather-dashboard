@@ -131,7 +131,7 @@ h1.main-header {
 main {
   display: grid;
   grid-template-columns: 1fr 4fr;
-  gap: 15px;
+  gap: 20px;
   padding: 0 5%;
   max-width: 1400px;
   margin: 0 auto;
@@ -154,6 +154,9 @@ main section.search-bar {
   text-align: right;
 }
 
+main form {
+  margin-bottom: 10px;
+}
 
 main form input {
   padding: 7px 15px;
@@ -182,18 +185,58 @@ main form button:hover {
   color: var(--highlight);
 }
 
-main .search-history button {
-  padding: 5px 15px;
-  border-radius: 10px;
+.radio-container {
+  justify-content: end;
+}
+
+.radio-item {
+  padding-left: 15px;
+  padding-top: 5px;
+}
+
+.radio-item label {
+  color: var(--primary);
+  font-size: 0.8rem;
+}
+
+.radio-item label {
+  margin-right: 3px;
+}
+.radio-item input[type="radio"]:checked {
+  accent-color: #71c9d5;
+}
+
+
+.history-button {
+  position: relative; /*needed to position the x */
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 4px;
   border: 2px solid var(--background);
   background: var(--primaryMuted) ;/*#A1887F #8a926c*/
   color: var(--secondary);
+  cursor: pointer;
 }
 
-main .search-history button:hover {
-  cursor: pointer;
-  /* border: 2px solid var(--highlight); */
+.history-button:hover {
   color: var(--highlight);
+}
+
+.button-text {
+  display: inline-block;
+}
+
+.close {
+  position: absolute; /* this positions the x element relative to parent */
+  top: 0;
+  right: 0;
+  color: var(--secondary);
+  cursor: pointer;
+  padding: 0 3px;
+}
+
+.close:hover {
+  color: red;
 }
 
 main section .search-history {
@@ -202,6 +245,14 @@ main section .search-history {
 
 main section.forecast {
   grid-column: 2 / 3;
+}
+
+.feedback {
+  color: var(--primary);
+  padding-top: 7px;
+  padding-left: 10px;
+  text-align: center;
+  font-size: 0.9rem;
 }
 
 .hour {
@@ -249,9 +300,6 @@ main section.forecast {
   border-bottom: 1px solid var(--background);
 }
 
-/* .day-tab:last-of-type {
-  border-right: 1px solid #888;
-} */
 
 .day-tab:hover {
   background: var(--background);
@@ -259,7 +307,6 @@ main section.forecast {
 }
 
 .day-date {
-  /* background: #dededf; */
   padding: 5px 5px;
   margin-top: 20px;
   margin-bottom: 5px;
@@ -276,10 +323,10 @@ main section.forecast {
 }
 
 .temp {
-  min-height: 100px;
+  min-height: 150px;
   position: relative;
-  border-bottom: 1px solid #cacaca;
-  border-top: 1px solid #cacaca;
+  /* border-bottom: 1px solid #cacaca;
+  border-top: 1px solid #cacaca; */
 }
 
 .temp p {
@@ -289,18 +336,10 @@ main section.forecast {
   bottom: 25%;
 }
 
-/* .hour.details div {
-  flex-grow:1;
-} */
-
-/* .hour.details p {
-  height: 10px;
-} */
-
 .hour-details {
   justify-content: end;
   text-align:left;
-  padding-left: 5px;
+  padding-left: 7px;
   background: var(--background);
   border-left:none;
   color: #999;
@@ -309,8 +348,4 @@ main section.forecast {
 
 .city-name {
   padding: 5px 5px;
-}
-
-.day-breakdown {
-  /* border-left: 1px solid #cacaca; */
 }

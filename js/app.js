@@ -1,6 +1,6 @@
 var apiKey = '0e8f67bf6ac0e37689d7edea5f37f808';
 var recentSearches = [];
-const MAX_NUM_OF_RECENTS = 6;
+const MAX_NUM_OF_RECENTS = 10;
 
 // app logic goes here
 var forecastEl = $('.forecast');
@@ -8,42 +8,64 @@ var formEl = $('form');
 
 var searchHistoryEl = $('.search-history');
 
-// function getNumTodayForecasts(unixTime) {
-//   var hourNow = Number(moment(unixTime, 'X').format('H'));
-//   var num;
-//   switch (true) {
-//     case hourNow < 3:
-//       num = 7;
-//       break;
-//     case hourNow >= 3 && hourNow < 6:
-//       num = 6;
-//       break;
-//     case hourNow >= 6 && hourNow < 9:
-//       num = 5;
-//       break;
-//     case hourNow >= 9 && hourNow < 12:
-//       num = 4;
-//       break;
-//     case hourNow >= 12 && hourNow < 15:
-//       num = 3;
-//       break;
-//     case hourNow >= 15 && hourNow < 18:
-//       num = 2;
-//       break;
-//     case hourNow >= 18 && hourNow < 21:
-//       num = 1;
-//       break;
-//     case hourNow >= 21 && hourNow < 24:
-//       num = 0;
-//       break;
-//     default:
-//       num = -1;
-//   }
-//   return num;
-// }
-
 function convertMetersPerSecondToMilesPerHour(metersPerSecond) {
   return metersPerSecond * 2.23693629;
+}
+
+function setTempHeight() {
+  $('.day-tab').each(function () {
+    var id = $(this).attr('id').split('-')[1];
+
+    var max = $(this).find('.column.text-center.f-1').children().first().text();
+    max = Number(max.match(/-?\d+/)[0]);
+
+    var min = $(this)
+      .find('.column.text-center.f-1')
+      .children()
+      .first()
+      .next()
+      .text();
+    min = Number(min.match(/-?\d+/)[0]);
+
+    console.log(`id: ${id}, max: ${max}, min: ${min}`);
+
+    var breakdownToTarget = $(`#breakdown-${id}`);
+    var maxLoops = breakdownToTarget.find('.hour').length - 1;
+    breakdownToTarget.find('.hour').each(function (index) {
+      console.log(index);
+      if (index === maxLoops) {
+        return;
+      }
+
+      var paraToTarget = $(this).find('.temp p');
+      var temp = paraToTarget.text();
+      temp = Number(temp.match(/-?\d+/)[0]);
+
+      var percentage;
+      if (max === min) {
+        percentage = 50;
+      } else {
+        percentage = Math.round(((temp - min) / (max - min)) * 100);
+      }
+
+      var height = percentage / 2;
+      height += 25;
+
+      console.log(
+        `temp: ${temp}, percentage: ${percentage}, height: ${height}`
+      );
+
+      paraToTarget.css('bottom', `${height}%`);
+    });
+  });
+}
+
+function noResultsFound() {
+  forecastEl.html('');
+  var feedbackEl = $('<div>');
+  feedbackEl.addClass('feedback');
+  feedbackEl.text('No results found. Please try again!');
+  forecastEl.append(feedbackEl);
 }
 
 function updateRecentSearches(newSuccessfulSearch, countryCode) {
@@ -87,16 +109,15 @@ function renderRecentSearches() {
 
   if (recentSearches === null) {
     recentSearches = [];
-    console.log('no recent searches');
     return;
   }
 
   for (var cityAndCode of recentSearches) {
-    var city = cityAndCode.split(',')[0];
-    city = city[0].toUpperCase() + city.slice(1);
+    var displayOnlyCity = cityAndCode.split(',')[0];
+    var displayBoth = cityAndCode.split(',').join(', ');
     searchHistoryEl.append(`
       <button value="${cityAndCode}" class="history-button">
-        <span class="button-text">${city}</span>
+        <span class="button-text">${displayBoth}</span>
         <span class="close">x</span>
       </button>
     `);
@@ -256,7 +277,9 @@ function showForecast(weatherDetails) {
       timeEl.append(`
         <div class="hour column">
           <p>${thisDaysForecasts[i].hour}</p>
-          <div><img src="${iconurl}"></div>
+          <div><img src="${iconurl}" alt="${
+        thisDaysForecasts[i].description
+      }"></div>
           <div class="temp"><p>${Math.round(
             thisDaysForecasts[i].temp
           )}°</p></div>
@@ -266,14 +289,19 @@ function showForecast(weatherDetails) {
         thisDaysForecasts[i].windDirection
       }deg); -webkit-transform: rotate(${
         thisDaysForecasts[i].windDirection
-      }deg)"></i></p>
+      }deg);font-size: 1.1rem"></i></p>
           <p>${thisDaysForecasts[i].humidity}%</p>
         </div>
       `);
     }
+    // "fas fa-long-arrow-alt-down" "fas fa-arrow-circle-down"
 
     timeEl.append(`
       <div class="hour column hour-details">
+        <p><small>(UTC)</small></p>
+        <p style="flex-grow:1"></p>
+        <div class="temp" style="border:none"><p style="left: 0%;
+        transform: none"><small>(°C)</small></p></div>
         <p><small>Wind (mph)</small></p>
         <p><small>Humidity</small></p>
       </div>
@@ -286,7 +314,9 @@ function showForecast(weatherDetails) {
       <div class="day-tab column" id="tab-${today.dateDay}">
         <p class="f-1">${today.dateShort}</p>
         <div class="tab-details row align-center">
-          <div class="f-1"><img src="${today.iconurl}"></div>
+          <div class="f-1"><img src="${today.iconurl}" alt="${
+      today.description
+    }"></div>
           <div class="column text-center f-1">
             <p>${Math.round(high)}°</p>
             <p><small>${Math.round(low)}°</small></p>
@@ -303,6 +333,7 @@ function showForecast(weatherDetails) {
   $(`#breakdown-${start}`).removeClass('hide');
   $(`#tab-${start}`).addClass('selected');
   $(`#tab-${start}`).children('.tab-description').removeClass('hide');
+  setTempHeight();
 }
 
 function doForecast(city, countryParam) {
@@ -315,7 +346,7 @@ function doForecast(city, countryParam) {
     }&limit=1&appid=${apiKey}`
   ).then(function (result) {
     if (result.length === 0) {
-      console.log('no results!');
+      noResultsFound();
       return;
     }
     // console.log(result[0]);
