@@ -274,7 +274,7 @@ function showForecast(weatherDetails) {
     today.description =
       today.description.charAt(0).toUpperCase() + today.description.slice(1);
 
-    today.iconurl = 'http://openweathermap.org/img/w/' + today.icon + '.png';
+    today.iconurl = 'https://openweathermap.org/img/w/' + today.icon + '.png';
 
     //initialise tracking variables
     var high = -99;
@@ -303,7 +303,9 @@ function showForecast(weatherDetails) {
       }
 
       var iconurl =
-        'http://openweathermap.org/img/w/' + thisDaysForecasts[i].icon + '.png';
+        'https://openweathermap.org/img/w/' +
+        thisDaysForecasts[i].icon +
+        '.png';
 
       // add time deets
       timeEl.append(`
