@@ -59,6 +59,8 @@
 body {
   font-family: sans-serif;
   background: var(--background);
+  height: 100vh;
+  display: flex;
 }
 
 a {
@@ -131,7 +133,7 @@ h1.main-header {
 main {
   display: grid;
   grid-template-columns: 1fr 4fr;
-  gap: 20px;
+  gap: 30px;
   padding: 0 5%;
   max-width: 1400px;
   margin: 0 auto;
@@ -348,4 +350,24 @@ main section.forecast {
 
 .city-name {
   padding: 5px 5px;
+}
+
+.spacer {
+  min-height: 50px;
+  flex-grow: 1;
+}
+
+footer {
+  background: var(--primary);
+}
+
+.footer-wrapper {
+  padding: 9px 5%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.footer-wrapper p {
+  text-align: center;
+  color: var(--secondary);
 }

@@ -8,35 +8,60 @@ var formEl = $('form');
 
 var searchHistoryEl = $('.search-history');
 
+/* Helper function that converts a Unix timestamp representing a timezone shift
+   to a readable format, such as '-0500' or '+0530' */
+function unixToReadableTimeShift(unixTimestamp) {
+  // Convert the unix timestamp (in seconds) to hours
+  var timeShiftInHours = unixTimestamp / 3600;
+
+  // Convert the time shift from hours to hours and minutes
+  var hours = Math.floor(timeShiftInHours);
+  var minutes = Math.round((timeShiftInHours - hours) * 60);
+
+  // Format the time shift as a string
+  var readableTimeShift =
+    (hours < 0 ? '-' : '+') +
+    (Math.abs(hours) < 10 ? '0' : '') +
+    Math.abs(hours) +
+    (minutes < 10 ? '0' : '') +
+    minutes;
+
+  return readableTimeShift;
+}
+
+// Helper function
 function convertMetersPerSecondToMilesPerHour(metersPerSecond) {
   return metersPerSecond * 2.23693629;
 }
 
+/* Function that sets the height of every temperature element in a forecast
+   relative to its parent div, based on the min and max temp for that day */
 function setTempHeight() {
+  // For each day tab, get the id, max and min
   $('.day-tab').each(function () {
     var id = $(this).attr('id').split('-')[1];
 
-    var max = $(this).find('.column.text-center.f-1').children().first().text();
+    // Convert max/min to number, making sure to pick up - sign and digits only
+    var max = $(this).find('.max').text();
     max = Number(max.match(/-?\d+/)[0]);
-
-    var min = $(this)
-      .find('.column.text-center.f-1')
-      .children()
-      .first()
-      .next()
-      .text();
+    var min = $(this).find('.min').text();
     min = Number(min.match(/-?\d+/)[0]);
 
     console.log(`id: ${id}, max: ${max}, min: ${min}`);
 
+    // Use the id to find the breakdown element to target
     var breakdownToTarget = $(`#breakdown-${id}`);
+    // As last hour element is descriptive text, need a way to exit upcoming loop on last iteration
     var maxLoops = breakdownToTarget.find('.hour').length - 1;
+
+    // For each hour, set the height
     breakdownToTarget.find('.hour').each(function (index) {
       console.log(index);
       if (index === maxLoops) {
         return;
       }
 
+      // Target the temp paragraph
       var paraToTarget = $(this).find('.temp p');
       var temp = paraToTarget.text();
       temp = Number(temp.match(/-?\d+/)[0]);
@@ -48,6 +73,8 @@ function setTempHeight() {
         percentage = Math.round(((temp - min) / (max - min)) * 100);
       }
 
+      /* As I want the height to be between 25% and 75% from the bottom
+         of the parent div, this logic helps achieve this */
       var height = percentage / 2;
       height += 25;
 
@@ -55,6 +82,7 @@ function setTempHeight() {
         `temp: ${temp}, percentage: ${percentage}, height: ${height}`
       );
 
+      // Now update the css for
       paraToTarget.css('bottom', `${height}%`);
     });
   });
@@ -295,10 +323,18 @@ function showForecast(weatherDetails) {
       `);
     }
     // "fas fa-long-arrow-alt-down" "fas fa-arrow-circle-down"
+    // var timezoneString = '';
+    // if (weatherDetails.timezone > 0) {
+    //   timezoneString = '+' + moment(weatherDetails.timezone).format('HHmm');
+    // } else {
+    //   timezoneString = moment(weatherDetails.timezone).format('HHmm');
+    // }
 
     timeEl.append(`
       <div class="hour column hour-details">
-        <p><small>(UTC)</small></p>
+        <p><small>(UTC${unixToReadableTimeShift(
+          weatherDetails.timezone
+        )})</small></p>
         <p style="flex-grow:1"></p>
         <div class="temp" style="border:none"><p style="left: 0%;
         transform: none"><small>(°C)</small></p></div>
@@ -318,8 +354,8 @@ function showForecast(weatherDetails) {
       today.description
     }"></div>
           <div class="column text-center f-1">
-            <p>${Math.round(high)}°</p>
-            <p><small>${Math.round(low)}°</small></p>
+            <p class="max">${Math.round(high)}°</p>
+            <p class="min"><small>${Math.round(low)}°</small></p>
           </div>
         </div>
         <p class="tab-description f-1 hide">${today.description}</p>
@@ -358,11 +394,16 @@ function doForecast(city, countryParam) {
       `https://api.openweathermap.org/data/2.5/weather?lat=${weatherDetails.lat}&lon=${weatherDetails.lon}&appid=${apiKey}&units=metric`
     ).then(function (weatherNow) {
       // weatherDetails.todayForecasts = getNumTodayForecasts(weatherNow.dt);
+      weatherDetails.timezone = weatherNow.timezone;
       weatherDetails.now = {
-        unix: weatherNow.dt,
-        dayMonth: Number(moment(weatherNow.dt, 'X').format('D')),
+        unix: weatherNow.dt + weatherDetails.timezone,
+        dayMonth: Number(
+          moment(weatherNow.dt + weatherDetails.timezone, 'X').format('D')
+        ),
         // dayWeek: moment(weatherNow.dt, 'X').format('ddd'),
-        hour: moment(weatherNow.dt, 'X').format('HH:mm'),
+        hour: moment(weatherNow.dt + weatherDetails.timezone, 'X').format(
+          'HH:mm'
+        ),
         temp: weatherNow.main.temp,
         humidity: weatherNow.main.humidity,
         description: weatherNow.weather[0].description,
@@ -375,10 +416,14 @@ function doForecast(city, countryParam) {
         `https://api.openweathermap.org/data/2.5/forecast?lat=${weatherDetails.lat}&lon=${weatherDetails.lon}&appid=${apiKey}&units=metric`
       ).then(function (forecast) {
         weatherDetails.forecasts = forecast.list.map((aForecast) => ({
-          unix: aForecast.dt,
-          dayMonth: Number(moment(aForecast.dt, 'X').format('D')),
+          unix: aForecast.dt + weatherDetails.timezone,
+          dayMonth: Number(
+            moment(aForecast.dt + weatherDetails.timezone, 'X').format('D')
+          ),
           // dayWeek: moment(aForecast.dt, 'X').format('ddd'),
-          hour: moment(aForecast.dt, 'X').format('HH:mm'),
+          hour: moment(aForecast.dt + weatherDetails.timezone, 'X').format(
+            'HH:mm'
+          ),
           temp: aForecast.main.temp,
           humidity: aForecast.main.humidity,
           description: aForecast.weather[0].description,
@@ -435,7 +480,9 @@ function init() {
     doForecast(searchParams[0], searchParams[1]);
   });
 
+  // remove search history item
   searchHistoryEl.on('click', '.close', function (event) {
+    // stop the other event on the button from happening
     event.stopPropagation();
     var cityToRemove = $(this).parent().val();
     var index = recentSearches.indexOf(cityToRemove);
@@ -443,6 +490,12 @@ function init() {
       recentSearches.splice(index, 1);
       if (recentSearches.length === 0) {
         localStorage.removeItem('weather_search_history');
+        forecastEl.html('');
+        forecastEl.append(`
+          <div class="feedback">
+            <p>Use the search box on the left to get started.</p>
+          </div>
+        `);
       } else {
         localStorage.setItem(
           'weather_search_history',
