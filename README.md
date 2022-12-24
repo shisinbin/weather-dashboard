@@ -16,4 +16,4 @@ The user can view the forecast for a different day by clicking on a different da
 
 ![screenshot of console output](img/ss2.png)
 
-More details (better description, fuller instructions inclduing screenshots, credit section) later.
+More details (better description, fuller instructions including screenshots, credit section) later.

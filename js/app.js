@@ -178,14 +178,14 @@ function showForecast(weatherDetails) {
   // Clear the old html
   forecastEl.html('');
 
-  // add the city name to h2 element
+  // Add city name to h2 element
   forecastEl.append(
     `<h2 class="city-name">${
       weatherDetails.name + ', ' + weatherDetails.countryCode
     }</h2>`
   );
 
-  // Come up with an array of all days covered in forecast
+  // Generate an array, days, that includes all days to be covered in forecast (e.g. 24, 25,... 29)
   var start = weatherDetails.forecasts[0].dayMonth;
   var end =
     weatherDetails.forecasts[weatherDetails.forecasts.length - 1].dayMonth;
@@ -194,121 +194,134 @@ function showForecast(weatherDetails) {
     days.push(i);
   }
 
-  // Create the days tab row and append it to forecastEl
+  // Create the days element that will hold all tabs and append it to forecast element
   var tabsEl = $('<div>');
   tabsEl.addClass('row days');
   forecastEl.append(tabsEl);
 
-  // For each day, do stuff
+  // For every day in days, do stuff
   for (let i = 0; i < days.length; i++) {
-    // filter forecasts by this day
+    // Filter weatherDetails to include forecasts for this day
     var thisDaysForecasts = weatherDetails.forecasts.filter(
       (forecast) => forecast.dayMonth === days[i]
     );
 
-    var todaysMoment = moment(thisDaysForecasts[0].unix, 'X');
+    var thisDaysMoment = moment(thisDaysForecasts[0].unix, 'X');
 
-    var today = {
-      dateDay: Number(todaysMoment.format('D')),
-      dateShort: todaysMoment.format('ddd D'),
-      dateLong: todaysMoment.format('dddd D'),
+    // Start to build an object for this day, starting with date stuff
+    var thisDay = {
+      dateDay: Number(thisDaysMoment.format('D')),
+      dateShort: thisDaysMoment.format('ddd D'),
+      dateLong: thisDaysMoment.format('dddd D'),
     };
 
+    // Now some logic to ensure that the selected icon and corresponding description
+    // is for the 5th time block (e.g. for UK, the 5th time block is 12:00)
+    // or if not possible, then select either the latest time block for the first day
+    // or the earliest time block for the last day.
+    // First day
     if (i === 0) {
-      // if the first day is the user's day as well, then show 'Today' in day tab
-      if (today.dateDay == moment().format('D')) {
-        today.dateShort = 'Today';
+      // If the first day is the user's current day, then show 'Today' in day tab
+      if (thisDay.dateDay == moment().format('D')) {
+        thisDay.dateShort = 'Today';
       }
       switch (true) {
         case thisDaysForecasts.length === 8:
-          today.icon = thisDaysForecasts[4].icon;
-          today.description = thisDaysForecasts[4].description;
+          thisDay.icon = thisDaysForecasts[4].icon;
+          thisDay.description = thisDaysForecasts[4].description;
           break;
         case thisDaysForecasts.length === 7:
-          today.icon = thisDaysForecasts[3].icon;
-          today.description = thisDaysForecasts[3].description;
+          thisDay.icon = thisDaysForecasts[3].icon;
+          thisDay.description = thisDaysForecasts[3].description;
           break;
         case thisDaysForecasts.length === 6:
-          today.icon = thisDaysForecasts[2].icon;
-          today.description = thisDaysForecasts[2].description;
+          thisDay.icon = thisDaysForecasts[2].icon;
+          thisDay.description = thisDaysForecasts[2].description;
           break;
         case thisDaysForecasts.length === 5:
-          today.icon = thisDaysForecasts[1].icon;
-          today.description = thisDaysForecasts[1].description;
+          thisDay.icon = thisDaysForecasts[1].icon;
+          thisDay.description = thisDaysForecasts[1].description;
           break;
         default:
-          today.icon = thisDaysForecasts[0].icon;
-          today.description = thisDaysForecasts[0].description;
+          thisDay.icon = thisDaysForecasts[0].icon;
+          thisDay.description = thisDaysForecasts[0].description;
       }
     }
-
+    // Last day
     if (i === days.length - 1) {
       switch (true) {
         case thisDaysForecasts.length === 1:
-          today.icon = thisDaysForecasts[0].icon;
-          today.description = thisDaysForecasts[0].description;
+          thisDay.icon = thisDaysForecasts[0].icon;
+          thisDay.description = thisDaysForecasts[0].description;
           break;
         case thisDaysForecasts.length === 2:
-          today.icon = thisDaysForecasts[1].icon;
-          today.description = thisDaysForecasts[1].description;
+          thisDay.icon = thisDaysForecasts[1].icon;
+          thisDay.description = thisDaysForecasts[1].description;
           break;
         case thisDaysForecasts.length === 3:
-          today.icon = thisDaysForecasts[2].icon;
-          today.description = thisDaysForecasts[2].description;
+          thisDay.icon = thisDaysForecasts[2].icon;
+          thisDay.description = thisDaysForecasts[2].description;
           break;
         case thisDaysForecasts.length === 4:
-          today.icon = thisDaysForecasts[3].icon;
-          today.description = thisDaysForecasts[3].description;
+          thisDay.icon = thisDaysForecasts[3].icon;
+          thisDay.description = thisDaysForecasts[3].description;
           break;
         default:
-          today.icon = thisDaysForecasts[4].icon;
-          today.description = thisDaysForecasts[4].description;
+          thisDay.icon = thisDaysForecasts[4].icon;
+          thisDay.description = thisDaysForecasts[4].description;
       }
     }
-
+    // Any other day
     if (i > 0 && i < days.length - 1) {
-      today.icon = thisDaysForecasts[4].icon;
-      today.description = thisDaysForecasts[4].description;
+      thisDay.icon = thisDaysForecasts[4].icon;
+      thisDay.description = thisDaysForecasts[4].description;
     }
 
-    today.description =
-      today.description.charAt(0).toUpperCase() + today.description.slice(1);
+    // Capitalise the first letter in the description
+    thisDay.description =
+      thisDay.description.charAt(0).toUpperCase() +
+      thisDay.description.slice(1);
 
-    today.iconurl = 'https://openweathermap.org/img/w/' + today.icon + '.png';
+    // Build a string to help get the icon
+    thisDay.iconurl =
+      'https://openweathermap.org/img/w/' + thisDay.icon + '.png';
 
-    //initialise tracking variables
-    var high = -99;
-    var low = 99;
+    // Initialise tracking variables to help get the highest and lowest temps
+    var highestTemp = -99;
+    var lowestTemp = 99;
 
-    // create a breakdown element for this day
+    // Create a breakdown element (a wrapper) for this day
     var breakdownEl = $('<div>');
     breakdownEl.addClass('day-breakdown column hide');
-    breakdownEl.attr('id', `breakdown-${today.dateDay}`);
-    // add today's date
+    breakdownEl.attr('id', `breakdown-${thisDay.dateDay}`);
+    // add thisDay's date
     breakdownEl.append(`
-      <h3 class="day-date">${today.dateLong}</h3>
+      <h3 class="day-date">${thisDay.dateLong}</h3>
     `);
-    var timeEl = $('<div>');
-    timeEl.addClass('day row');
-    breakdownEl.append(timeEl);
 
-    // Iterate through each time period
+    // Create a day element inside of the wrapper
+    var dayEl = $('<div>');
+    dayEl.addClass('day row');
+    breakdownEl.append(dayEl);
+
+    // Iterate through each forecast for this day
     for (let i = 0; i < thisDaysForecasts.length; i++) {
-      // update tracking variables
-      if (thisDaysForecasts[i].temp > high) {
-        high = thisDaysForecasts[i].temp;
+      // Update tracking variables
+      if (thisDaysForecasts[i].temp > highestTemp) {
+        highestTemp = thisDaysForecasts[i].temp;
       }
-      if (thisDaysForecasts[i].temp < low) {
-        low = thisDaysForecasts[i].temp;
+      if (thisDaysForecasts[i].temp < lowestTemp) {
+        lowestTemp = thisDaysForecasts[i].temp;
       }
 
+      // Build a string to help get the icon
       var iconurl =
         'https://openweathermap.org/img/w/' +
         thisDaysForecasts[i].icon +
         '.png';
 
-      // add time deets
-      timeEl.append(`
+      // Inject a time block element inside of the day element
+      dayEl.append(`
         <div class="hour column">
           <p>${thisDaysForecasts[i].hour}</p>
           <div><img src="${iconurl}" alt="${
@@ -328,9 +341,9 @@ function showForecast(weatherDetails) {
         </div>
       `);
     }
-    // "fas fa-long-arrow-alt-down" "fas fa-arrow-circle-down"
 
-    timeEl.append(`
+    // Add another element to the day that describes what each bit of info is
+    dayEl.append(`
       <div class="hour column hour-details">
         <p><small>(UTC${unixToReadableTimeShift(
           weatherDetails.timezone
@@ -343,59 +356,74 @@ function showForecast(weatherDetails) {
       </div>
     `);
 
-    // now that you've iterated through each time period for this day,
-    // you can add a new day tab which gives the high and low temp
+    // Now that we have the highest and lowest temperature for this day,
+    // use this and other details collected so far to inject a tab for this day
     tabsEl.append(`
-      <div class="day-tab column" id="tab-${today.dateDay}">
-        <p class="f-1">${today.dateShort}</p>
+      <div class="day-tab column" id="tab-${thisDay.dateDay}">
+        <p class="f-1">${thisDay.dateShort}</p>
         <div class="tab-details row align-center">
-          <div class="f-1"><img src="${today.iconurl}" alt="${
-      today.description
+          <div class="f-1"><img src="${thisDay.iconurl}" alt="${
+      thisDay.description
     }"></div>
           <div class="column text-center f-1">
-            <p class="max">${Math.round(high)}°</p>
-            <p class="min"><small>${Math.round(low)}°</small></p>
+            <p class="max">${Math.round(highestTemp)}°</p>
+            <p class="min"><small>${Math.round(lowestTemp)}°</small></p>
           </div>
         </div>
-        <p class="tab-description f-1 hide">${today.description}</p>
+        <p class="tab-description f-1 hide">${thisDay.description}</p>
       </div>
     `);
 
-    // finally, we can add the breakdown element to the forecast
+    // Last thing to do for this day is add the wrapper breakdown element to the forecast element
     forecastEl.append(breakdownEl);
   }
-  // sort out bigging up tab, and showing breakdown for this day
+
+  // Show the breakdown for the first day
   $(`#breakdown-${start}`).removeClass('hide');
+
+  // Expand the tab and show the description for this first day
   $(`#tab-${start}`).addClass('selected');
   $(`#tab-${start}`).children('.tab-description').removeClass('hide');
+
+  // Highlights the text selection in the search bar
   $('.search').select();
+
+  // Sort out the heights for the temperatures in each time block for each day
   setTempHeight();
 }
 
 // Function that handles the API calls, filtering the data required about 41 forecasts
 function doForecast(city, countryParam) {
+  // Initialise an object that we'll use to build weather info for all days
   var weatherDetails = {};
-  // var numTodayForecasts;
 
+  // Do the API stuff
+  // Geocoder API request
   $.get(
     `https://api.openweathermap.org/geo/1.0/direct?q=${
       city + countryParam
     }&limit=1&appid=${apiKey}`
   ).then(function (result) {
+    // If the geocoder returned nothing, then deal appropriately with that
     if (result.length === 0) {
       noResultsFound();
       return;
     }
-    // console.log(result[0]);
+
+    // Build up the info about this city
     weatherDetails.lat = result[0].lat;
     weatherDetails.lon = result[0].lon;
     weatherDetails.name = result[0].name;
     weatherDetails.countryCode = result[0].country;
+
+    // Current weather API request
     $.get(
       `https://api.openweathermap.org/data/2.5/weather?lat=${weatherDetails.lat}&lon=${weatherDetails.lon}&appid=${apiKey}&units=metric`
     ).then(function (weatherNow) {
-      // weatherDetails.todayForecasts = getNumTodayForecasts(weatherNow.dt);
+      // Pick up the timezone as it's needed for adjusting time block info for different locations
       weatherDetails.timezone = weatherNow.timezone;
+
+      // Add a temporary object that holds the weather data for right now
       weatherDetails.now = {
         unix: weatherNow.dt + weatherDetails.timezone,
         dayMonth: Number(
@@ -413,15 +441,16 @@ function doForecast(city, countryParam) {
         windDirection: weatherNow.wind.deg,
       };
 
+      // 5-day forecast API request
       $.get(
         `https://api.openweathermap.org/data/2.5/forecast?lat=${weatherDetails.lat}&lon=${weatherDetails.lon}&appid=${apiKey}&units=metric`
       ).then(function (forecast) {
+        // Filter the data from the API to only include details interested in
         weatherDetails.forecasts = forecast.list.map((aForecast) => ({
           unix: aForecast.dt + weatherDetails.timezone,
           dayMonth: Number(
             moment(aForecast.dt + weatherDetails.timezone, 'X').format('D')
           ),
-          // dayWeek: moment(aForecast.dt, 'X').format('ddd'),
           hour: moment(aForecast.dt + weatherDetails.timezone, 'X').format(
             'HH:mm'
           ),
@@ -429,20 +458,18 @@ function doForecast(city, countryParam) {
           humidity: aForecast.main.humidity,
           description: aForecast.weather[0].description,
           icon: aForecast.weather[0].icon,
-          windSpeed: (function convertMetersPerSecondToMilesPerHour(
-            metersPerSecond
-          ) {
-            return metersPerSecond * 2.23693629;
-          })(aForecast.wind.speed),
+          windSpeed: convertMetersPerSecondToMilesPerHour(aForecast.wind.speed),
           windDirection: aForecast.wind.deg,
         }));
 
+        // Now put the forecast about right now into the beginning of the forecast array
         weatherDetails.forecasts.unshift(weatherDetails.now);
         delete weatherDetails.now;
-        // console.log(weatherDetails);
 
+        // Now that we've collected and arranged the data, use it to show the data
         showForecast(weatherDetails);
 
+        // Update recent searches column
         updateRecentSearches(weatherDetails.name, weatherDetails.countryCode);
       });
     });
@@ -451,48 +478,59 @@ function doForecast(city, countryParam) {
 
 // Function to load on page load
 function init() {
+  // Render recent searches from local storage if applicable
+  renderRecentSearches();
+
   // Form submit event listener
   formEl.submit(function (event) {
     event.preventDefault();
-
     var searchText = $('#search-text').val().trim();
+
+    // If there's no text in search input, do nothing
     if (searchText === '') {
       return;
     }
 
+    // Get the parameter chosen from the radio buttons
     var countryParam = $('input[name="country"]:checked').val();
-
     if (countryParam === 'gb') {
       countryParam = ',GB';
     } else {
       countryParam = '';
     }
+
+    // Do the forecast
     doForecast(searchText, countryParam);
   });
 
-  // Day tab event listener
+  // Day tab click event listener
   forecastEl.on('click', '.day-tab', function () {
     switchForecast($(this));
   });
 
-  // Recent search event listener
+  // Recent search click event listener
   searchHistoryEl.on('click', 'button', function () {
     var searchParams = $(this).val().split(',');
     searchParams[1] = ',' + searchParams[1];
-    // console.log(searchParams);
     doForecast(searchParams[0], searchParams[1]);
+
+    // Update the text in the search bar to reflect the search history item
     $('.search').val(`${searchParams[0]}`);
     $('.search').select();
   });
 
   // Removing recent search event listener
   searchHistoryEl.on('click', '.close', function (event) {
-    // stop the other event on the button from happening
+    // Stop the other event in the button from happening
     event.stopPropagation();
+
+    // Get the value of the button and use if to remove it from recentSearches array
     var cityToRemove = $(this).parent().val();
     var index = recentSearches.indexOf(cityToRemove);
     if (index !== -1) {
       recentSearches.splice(index, 1);
+
+      // If recentSearches array is now empty, remove it from local storage and clear page
       if (recentSearches.length === 0) {
         localStorage.removeItem('weather_search_history');
         forecastEl.html('');
@@ -501,6 +539,9 @@ function init() {
             <p>Use the search box on the left to get started.</p>
           </div>
         `);
+        $('.search').val('');
+        $('.search').select();
+        // Otherwise just update local storage to reflect changes made
       } else {
         localStorage.setItem(
           'weather_search_history',
@@ -508,10 +549,9 @@ function init() {
         );
       }
     }
+    // Use the updated local storage to re-render the search history column
     renderRecentSearches();
   });
-
-  renderRecentSearches();
 }
 
 init();

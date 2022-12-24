@@ -61,9 +61,11 @@
 body {
   font-family: sans-serif;
   background: var(--background);
-  /* To help get the footer to stay at bottom */
+  /* Following helps footer stay at bottom */
   height: 100vh;
   display: flex;
+  flex-direction: column;
+  color: var(--text);
 }
 
 a {
@@ -105,33 +107,31 @@ a {
 
 /**** CUSTOM STYLES ****/
 
-/* Header */
+/** Header **/
 header {
   background: var(--primary);
 }
+
+header div.header-wrapper {
+  padding: 9px 5%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 header h3, header nav i {
   color: var(--secondary);
 }
+
 header nav i {
   font-size: 1.2rem;
-  /* padding: 0 2px; */
   padding-left: 5px;
-}
-header nav i:last-of-type {
-  padding-right: 0;
 }
 
 header nav i:hover {
   color: var(--highlight);
 }
 
-.header-wrapper {
-  padding: 9px 5%;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Content */
+/** Content **/
 h1.main-header {
   text-align: center;
   margin: 15px 0;
@@ -147,28 +147,20 @@ main {
   margin: 0 auto;
 }
 
-/* Search column */
-main section.search-bar {
+/** Search panel **/
+section.search-panel {
   grid-column: 1 / 2;
-  grid-row: 1 / 3;
-  gap: 5px;
+  grid-row: 1 / auto;
+  gap: 17px;
 }
 
-.search-wrapper {
+/* Search form */
+.search-panel form div.search-wrapper {
   display: grid;
   grid-template-columns: 1fr auto;
 }
 
-.search-options {
-  padding: 3px 0;
-  text-align: right;
-}
-
-main form {
-  margin-bottom: 10px;
-}
-
-main form input {
+.search-panel form input.search {
   padding: 7px 15px;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
@@ -176,11 +168,11 @@ main form input {
   outline: none;
 }
 
-main form input::placeholder {
+.search-panel form input.search::placeholder {
   color: var(--primary);
 }
 
-main form button {
+.search-panel form button {
   width: 50px;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -189,35 +181,36 @@ main form button {
   border:0;
 }
 
-main form button:hover {
+.search-panel form button:hover {
   cursor: pointer;
   /* border: 2px solid var(--highlight); */
   color: var(--highlight);
 }
 
-.radio-container {
+.search-panel form div.radio-container {
   justify-content: end;
+  margin-top: 8px;
 }
 
-.radio-item {
+.search-panel form div.radio-item {
   padding-left: 15px;
-  padding-top: 5px;
 }
 
-.radio-item label {
+.search-panel form .radio-item label {
   color: var(--primary);
   font-size: 0.8rem;
+  margin-right: 4px;
 }
 
-.radio-item label {
-  margin-right: 3px;
-}
-.radio-item input[type="radio"]:checked {
+.search-panel form .radio-item input[type="radio"]:checked {
   accent-color: #71c9d5;
 }
 
-
-.history-button {
+/* Search history */
+.search-panel div.search-history {
+  gap: 5px;
+}
+.search-history button.history-button {
   position: relative; /*needed to position the x */
   display: inline-block;
   padding: 10px 20px;
@@ -228,15 +221,15 @@ main form button:hover {
   cursor: pointer;
 }
 
-.history-button:hover {
+.search-history .history-button:hover {
   color: var(--highlight);
 }
 
-.button-text {
+.search-history .history-button span.button-text {
   display: inline-block;
 }
 
-.close {
+.search-history .history-button span.close {
   position: absolute; /* this positions the x element relative to parent */
   top: 0;
   right: 0;
@@ -245,19 +238,17 @@ main form button:hover {
   padding: 0 3px;
 }
 
-.close:hover {
+.search-history .history-button .close:hover {
   color: red;
 }
 
-main section .search-history {
-  gap: 5px;
-}
-
+/** Forecast panel **/
 main section.forecast {
   grid-column: 2 / 3;
+  gap: 10px;
 }
 
-.feedback {
+.forecast div.feedback {
   color: var(--primary);
   padding-top: 7px;
   padding-left: 10px;
@@ -265,34 +256,20 @@ main section.forecast {
   font-size: 0.9rem;
 }
 
-.hour {
-  padding-left: auto;
-  padding-right: auto;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  background: #eef0fb;
-  text-align: center;
-}
-.hour > *:not(:last-child) {
-  margin-bottom: 15px;
+.forecast h2.city-name {
+  padding: 5px 5px;
+  margin-bottom: 10px;
 }
 
-.day > *:not(:first-child):not(:last-child) {
-  border-left: 1px solid #333;
-}
-
-.hour.now {
-  min-width: 200px;
-}
-
-.days {
+/* Day tabs */
+.forecast div.days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: 0.7fr 1fr;
   text-align: center;
 }
 
-.day-tab {
+.days div.day-tab {
   grid-column: span 1;
   grid-row: 2/3;
   padding: 10px;
@@ -303,76 +280,82 @@ main section.forecast {
   min-width: 100px;
 }
 
-.day-tab.selected {
+.days .day-tab.selected {
   grid-column: span 2;
   grid-row: 1/3;
   background: var(--background);
   border-bottom: 1px solid var(--background);
 }
 
-
-.day-tab:hover {
+.days .day-tab:hover {
   background: var(--background);
   border-bottom: 1px solid var(--background);
 }
 
-.day-date {
-  padding: 5px 5px;
-  margin-top: 20px;
-  margin-bottom: 5px;
-  color: var(--text);
-}
-
-.tab-details {
+.days .day-tab div.tab-details {
   flex: 2;
   text-align: center;
 }
 
-.day {
+/* Day breakdowns */
+.forecast div.day-breakdown {
+  gap: 10px;
+}
+
+.day-breakdown h3.day-date {
+  padding: 5px 5px;
+}
+
+.day-breakdown div.day {
   display:grid;
   grid-template-columns: repeat(9,1fr);
 }
 
-.temp {
+.day-breakdown .day div.hour {
+  padding-left: auto;
+  padding-right: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background: #eef0fb;
+  text-align: center;
+  gap: 20px;
+}
+
+.day-breakdown .day > *:not(:first-child):not(:last-child) {
+  border-left: 1px solid var(--text);
+}
+
+.day-breakdown .day .hour div.temp {
   min-height: 150px;
   position: relative;
   /* border-bottom: 1px solid #cacaca;
   border-top: 1px solid #cacaca; */
 }
 
-.temp p {
+.day-breakdown .day .hour .temp p {
   position: absolute;
   left: 50%;
   transform: translate(-50%);
   bottom: 25%;
 }
 
-.hour-details {
+.day-breakdown .day div.hour-details {
   justify-content: end;
   text-align:left;
   padding-left: 7px;
-  background: var(--background);
+  background: var(--background) !important;
   border-left:none;
   color: #999;
   min-width:80px;
 }
 
-.city-name {
-  padding: 5px 5px;
-  margin-bottom: 10px;
-  color: var(--text);
-}
-
-.spacer {
-  min-height: 50px;
-  flex-grow: 1;
-}
-
+/** Footer **/
 footer {
+  margin-top: 20px;
   background: var(--primary);
 }
 
-.footer-wrapper {
+footer div.footer-wrapper {
   padding: 9px 5%;
   max-width: 1400px;
   margin: 0 auto;
