@@ -240,13 +240,18 @@ section.search-panel {
   color: red;
 }
 
-/** Forecast panel **/
-main section.forecast {
+main section.weather {
   grid-column: 2 / 3;
   gap: 10px;
 }
 
-.forecast div.feedback {
+/** Forecast panel **/
+/* main section.forecast {
+  grid-column: 2 / 3;
+  gap: 10px;
+} */
+
+.weather div.feedback {
   color: var(--primary);
   padding-top: 7px;
   padding-left: 10px;

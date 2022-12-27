@@ -4,7 +4,7 @@ var geocoderBaseURL = `https://api.openweathermap.org/geo/1.0/direct?appid=${api
 const MAX_NUM_OF_RECENTS = 8;
 
 // Grab HTML elements
-var forecastEl = $('.forecast');
+var weatherEl = $('.weather');
 var formEl = $('form');
 var searchHistoryEl = $('.search-history');
 
@@ -111,11 +111,11 @@ function setTempHeight() {
 // Clears forecast HTML and provides feedback when user
 // puts in a search term that the API doesn't recognise
 function noResultsFound() {
-  forecastEl.html('');
+  weatherEl.html('');
   var feedbackEl = $('<div>');
   feedbackEl.addClass('feedback');
   feedbackEl.text('No results found. Please try again!');
-  forecastEl.append(feedbackEl);
+  weatherEl.append(feedbackEl);
 }
 
 // Function that takes in a successful search term and its corresponding country code
@@ -152,17 +152,13 @@ function updateRecentSearches(newSuccessfulSearch, countryCode) {
 // Function that uses local storage to help render the recent searches bar
 function renderRecentSearches() {
   searchHistoryEl.html('');
-
   recentSearches = JSON.parse(localStorage.getItem('weather_search_history'));
-
   if (recentSearches === null) {
     recentSearches = [];
     return;
   }
-
+  // Iterate through stored searches, adding a button for each one
   for (var cityAndCode of recentSearches) {
-    console.log(cityAndCode);
-    console.log(formatRecentSearchText(cityAndCode));
     searchHistoryEl.append(`
     <button value="${cityAndCode}" class="history-button">
       <span class="button-text">${formatRecentSearchText(cityAndCode)}</span>
@@ -170,23 +166,11 @@ function renderRecentSearches() {
     </button>
     `);
   }
-
-  // for (var cityAndCode of recentSearches) {
-  //   var displayOnlyCity = cityAndCode.split(',')[0]; // could use this instead of below
-  //   var displayBoth = cityAndCode.split(',').join(', ');
-  //   searchHistoryEl.append(`
-  //     <button value="${cityAndCode}" class="history-button">
-  //       <span class="button-text">${displayBoth}</span>
-  //       <span class="close">x</span>
-  //     </button>
-  //   `);
-  // }
 }
 
 // Function to show both the day tab and breakdown for the tab that was clicked
 function switchForecast(element) {
   var tab = $(element);
-
   // Get the id, and grab the element that needs to be changed
   var id = tab.attr('id').split('-')[1];
   var tabToChange = $(`#tab-${id}`);
@@ -200,6 +184,7 @@ function switchForecast(element) {
   tabToChange.children('.tab-description').removeClass('hide');
 
   // globally hide all breakdowns before unhiding the appropriate one
+  var forecastEl = $('.forecast');
   forecastEl.children('.day-breakdown').addClass('hide');
   forecastEl.children(`#breakdown-${id}`).removeClass('hide');
 }
@@ -207,20 +192,29 @@ function switchForecast(element) {
 // Function that handles the logic involved for translating received data and displaying it
 function showForecast(weatherDetails) {
   // Clear the old html
-  forecastEl.html('');
+  weatherEl.html('');
 
   // Add city name to h2 element
-  forecastEl.append(
+  weatherEl.append(
     `<h2 class="city-name">Weather conditions for ${
       weatherDetails.name + ', ' + weatherDetails.countryCode
     }</h2>`
   );
+
+  // Here's the logic for the NOW weather
+
+  var forecastEl = $('<section>');
+  forecastEl.addClass('forecast column');
+  weatherEl.append(forecastEl);
 
   // Generate an array, days, that includes all days to be covered in forecast (e.g. 28, 29, 30, 31, 1, 2)
   // the ... is a spread operator used to convert the set object into an array
   days = [
     ...new Set(weatherDetails.forecasts.map((forecast) => forecast.dayMonth)),
   ];
+
+  // this is a pointer variable needed for css stuff
+  var start = days[0];
 
   // Create the days element that will hold all tabs and append it to forecast element
   var tabsEl = $('<div>');
@@ -234,6 +228,14 @@ function showForecast(weatherDetails) {
       (forecast) => forecast.dayMonth === days[i]
     );
 
+    // a quick check to see if for the first day, if there is only 1 forecast,
+    // i.e. the NOW forecast, then skip it as there's no value to including it
+    if (i === 0 && thisDaysForecasts.length === 1) {
+      // move to the next day
+      start = days[1];
+      continue;
+    }
+
     var thisDaysMoment = moment(thisDaysForecasts[0].unix, 'X');
 
     // Start to build an object for this day, starting with date stuff
@@ -243,13 +245,14 @@ function showForecast(weatherDetails) {
       dateLong: thisDaysMoment.format('dddd D'),
     };
 
-    // Now some logic to ensure that the selected icon and corresponding description
-    // is for the 5th time block (e.g. for UK, the 5th time block is 12:00)
-    // or if not possible, then select either the latest time block for the first day
-    // or the earliest time block for the last day.
-    // First day
+    /* Now some logic to ensure that the selected icon and corresponding description
+       is for the 5th time block (e.g. for UK, the 5th time block is 12:00)
+       or if not possible, then select either the latest time block for the first day
+       or the earliest time block for the last day. */
+
+    // First day logic
     if (i === 0) {
-      // If the first day is the user's current day, then show 'Today' in day tab
+      // If the first day is the USER'S current day, then show 'Today' in day tab
       if (thisDay.dateDay == moment().format('D')) {
         thisDay.dateShort = 'Today';
       }
@@ -275,7 +278,7 @@ function showForecast(weatherDetails) {
           thisDay.description = thisDaysForecasts[0].description;
       }
     }
-    // Last day
+    // Last day logic
     if (i === days.length - 1) {
       switch (true) {
         case thisDaysForecasts.length === 1:
@@ -299,7 +302,7 @@ function showForecast(weatherDetails) {
           thisDay.description = thisDaysForecasts[4].description;
       }
     }
-    // Any other day
+    // Any other day logic
     if (i > 0 && i < days.length - 1) {
       thisDay.icon = thisDaysForecasts[4].icon;
       thisDay.description = thisDaysForecasts[4].description;
@@ -402,7 +405,6 @@ function showForecast(weatherDetails) {
     forecastEl.append(breakdownEl);
   }
 
-  var start = weatherDetails.forecasts[0].dayMonth;
   // Show the breakdown for the first day
   $(`#breakdown-${start}`).removeClass('hide');
 
@@ -461,9 +463,12 @@ function doForecast(searchString) {
         icon: weatherNow.weather[0].icon,
         windSpeed: convertMetersPerSecondToMilesPerHour(weatherNow.wind.speed),
         windDirection: weatherNow.wind.deg,
-        // sunrise: weatherNow.sys.sunrise + weatherDetails.timezone,
-        // sunset: weatherNow.sys.sunset + weatherDetails.timezone,
-        // visibility: weatherNow.visibility,
+        // extra stuff below
+        feelsLike: weatherNow.main.feels_like,
+        pressure: weatherNow.main.pressure,
+        sunrise: weatherNow.sys.sunrise + weatherDetails.timezone,
+        sunset: weatherNow.sys.sunset + weatherDetails.timezone,
+        visibility: weatherNow.visibility,
       };
 
       // 5-day forecast API request
@@ -490,6 +495,7 @@ function doForecast(searchString) {
         delete weatherDetails.now;
 
         // Now that we've collected and arranged the data, use it to show the data
+        console.log(weatherDetails);
         showForecast(weatherDetails);
 
         // Update recent searches column
@@ -524,7 +530,7 @@ function init() {
   });
 
   // Day tab click event listener
-  forecastEl.on('click', '.day-tab', function () {
+  weatherEl.on('click', '.day-tab', function () {
     switchForecast($(this));
   });
 
@@ -552,8 +558,8 @@ function init() {
       // If recentSearches array is now empty, remove it from local storage and clear page
       if (recentSearches.length === 0) {
         localStorage.removeItem('weather_search_history');
-        forecastEl.html('');
-        forecastEl.append(`
+        weatherEl.html('');
+        weatherEl.append(`
           <div class="feedback">
             <p>Use the search box on the left to get started.</p>
           </div>
