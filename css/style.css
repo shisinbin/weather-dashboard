@@ -353,7 +353,7 @@ footer {
   background: var(--primary);
 }
 
-.footer p {
+footer p {
   text-align: center;
   color: var(--secondary);
 }
