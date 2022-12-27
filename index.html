@@ -17,8 +17,8 @@
   </head>
   <body>
     <header>
-      <div class="header-wrapper row align-center justify-space-between">
-        <h3><i class="fas fa-cloud-sun-rain"></i> Forecast</h3>
+      <div class="wrapper row align-center justify-space-between">
+        <h3><i class="fas fa-cloud-sun-rain"></i> Weather Dashboard</h3>
         <nav>
           <a
             href="https://github.com/shisinbin/weather-dashboard"
@@ -34,52 +34,54 @@
       </div>
     </header>
 
-    <h1 class="main-header">Weather Dashboard</h1>
+    <!-- <h1 class="main-header">Weather Dashboard</h1> -->
 
     <main class="f-1">
-      <section class="search-panel column">
-        <form class="column">
-          <div class="search-wrapper">
-            <input
-              class="search"
-              type="text"
-              id="search-text"
-              placeholder="Enter a city"
-              spellcheck="false"
-            />
-            <button><i class="fas fa-search"></i></button>
-          </div>
-
-          <div class="radio-container row">
-            <div class="radio-item row align-center">
-              <label for="anywhere">Anywhere</label>
+      <div class="wrapper main-content-structure">
+        <section class="search-panel column">
+          <form class="column">
+            <div class="search-wrapper">
               <input
-                type="radio"
-                name="country"
-                value="anywhere"
-                id="anywhere"
-                checked
+                class="search"
+                type="text"
+                id="search-text"
+                placeholder="Enter a city"
+                spellcheck="false"
               />
+              <button><i class="fas fa-search"></i></button>
             </div>
-            <div class="radio-item row align-center">
-              <label for="gb">UK</label>
-              <input type="radio" name="country" value="gb" id="gb" />
+
+            <div class="radio-container row">
+              <div class="radio-item row align-center">
+                <label for="anywhere">Anywhere</label>
+                <input
+                  type="radio"
+                  name="country"
+                  value=""
+                  id="anywhere"
+                  checked
+                />
+              </div>
+              <div class="radio-item row align-center">
+                <label for="gb">UK</label>
+                <input type="radio" name="country" value="gb" id="gb" />
+              </div>
             </div>
+          </form>
+
+          <div class="search-history column"></div>
+        </section>
+
+        <section class="forecast column">
+          <div class="feedback">
+            <p>Use the search box on the left to get started.</p>
           </div>
-        </form>
-
-        <div class="search-history column"></div>
-      </section>
-
-      <section class="forecast column">
-        <div class="feedback">
-          <p>Use the search box on the left to get started.</p>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
 
     <footer>
-      <div class="footer-wrapper"><p>&copy; shisinbin</p></div>
+      <div class="wrapper"><p>&copy; shisinbin</p></div>
     </footer>
 
     <!-- jquery -->

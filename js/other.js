@@ -1,19 +1,18 @@
 var apiKey = '0e8f67bf6ac0e37689d7edea5f37f808';
-var iconBaseURL = 'https://openweathermap.org/img/w/';
+var iconBaseURL = 'https://openweathermap.org/img/wn/';
 var geocoderBaseURL = `https://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&limit=1&q=`;
 const MAX_NUM_OF_RECENTS = 8;
 
 // Grab HTML elements
-var forecastEl = $('.forecast');
+// var forecastEl = $('.forecast');
 var formEl = $('form');
 var searchHistoryEl = $('.search-history');
+var weatherEl = $('.weather');
 
 // Initialise an array to help with local storage logic
 var recentSearches = [];
 
-/*************************** HELPER FUNCTIONS ********************************/
-
-// Converts a Unix timestamp representing a timezone shift
+// Helper function that converts a Unix timestamp representing a timezone shift
 // to a readable format, such as '-0500' or '+0530'
 function unixToReadableTimeShift(unixTimestamp) {
   // Convert the unix timestamp (in seconds) to hours
@@ -34,17 +33,128 @@ function unixToReadableTimeShift(unixTimestamp) {
   return readableTimeShift;
 }
 
+// Helper function to convert metres/sec to miles/hour
 function convertMetersPerSecondToMilesPerHour(metersPerSecond) {
   return metersPerSecond * 2.23693629;
+}
+
+function convertUnixToMilitaryTime(unixTimestamp) {
+  return moment.unix(unixTimestamp).format('HH:mm');
 }
 
 function capitaliseFirstCharacter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-/********** FUNCTIONS THAT DO STUFF WITHOUT NEEDING SQUAT **********************/
+function showCurrent(weatherObj) {
+  var iconurl = `${iconBaseURL + weatherObj.icon + '.png'}`;
+  console.log(weatherObj);
+  weatherEl.append(`
+  <h3 class="now-text">Now</h3>
 
-// Sets the height of every temperature element in a forecast
+  <div class="current-weather text-center">
+    <div class="current-main-details">
+      <div class="tile column">
+        <p>${Math.round(weatherObj.temp)}°C</p>
+        <p><small>Feels like: 10.4</small></p>
+      </div>
+      <div class="tile">
+        <div><img src="${iconurl}" alt="${weatherObj.description}"></div>
+      </div>
+      <div class="tile">
+        <p>${capitaliseFirstCharacter(weatherObj.description)}</p>
+      </div>
+    </div>
+
+    <div class="current-extra-details">
+      <div class="tile">
+        <p>${Math.round(weatherObj.windSpeed)} mph</p>
+        <p><small>Wind speed</small></p>
+      </div>
+
+      <div class="tile">
+        <p><i class="fas fa-arrow-up"></i>${Math.round(
+          weatherObj.windDirection
+        )}</p>
+        <p><small>Wind dir</small></p>
+      </div>
+
+      <div class="tile">
+        <p>${Math.round(weatherObj.visibility)} km</p>
+        <p><small>Visibility</small></p>
+      </div>
+
+      <div class="tile">
+        <p>${Math.round(weatherObj.humidity)}%</p>
+        <p><small>Humidity</small></p>
+      </div>
+
+      <div class="tile">
+        <p>${convertUnixToMilitaryTime(weatherObj.sunrise)}</p>
+        <p><small>Sunrise</small></p>
+      </div>
+
+      <div class="tile">
+        <p>${convertUnixToMilitaryTime(weatherObj.sunset)}</p>
+        <p><small>Sunset</small></p>
+      </div>
+    </div>
+  </div>
+  `);
+}
+
+/*
+  <h3 class="now-text">Now</h3>
+
+  <div class="current-weather text-center">
+    <div class="current-main-details">
+      <div class="tile column">
+        <p>10°C</p>
+        <p><small>Feels like: 10.4</small></p>
+      </div>
+      <div class="tile">
+        <p><i class="fas fa-smog"></i></p>
+      </div>
+      <div class="tile">
+        <p>Heavy smog</p>
+      </div>
+    </div>
+
+    <div class="current-extra-details">
+      <div class="tile">
+        <p>5 mph</p>
+        <p><small>Wind speed</small></p>
+      </div>
+
+      <div class="tile">
+        <p><i class="fas fa-arrow-up"></i></p>
+        <p><small>Wind dir</small></p>
+      </div>
+
+      <div class="tile">
+        <p>1000 km</p>
+        <p><small>Visibility</small></p>
+      </div>
+
+      <div class="tile">
+        <p>85%</p>
+        <p><small>Humidity</small></p>
+      </div>
+
+      <div class="tile">
+        <p>06:23</p>
+        <p><small>Sunrise</small></p>
+      </div>
+
+      <div class="tile">
+        <p>17:47</p>
+        <p><small>Sunset</small></p>
+      </div>
+    </div>
+  </div>
+*/
+
+// Function that sets the height of every temperature element in a forecast
 // relative to its parent div, based on the min and max temp for that day
 function setTempHeight() {
   // For each day tab, get the id, max and min
@@ -97,14 +207,19 @@ function setTempHeight() {
   });
 }
 
-// Clears forecast HTML and provides feedback when user
+// Function that clears forecast HTML and provides feedback when user
 // puts in a search term that the API doesn't recognise
 function noResultsFound() {
-  forecastEl.html('');
-  var feedbackEl = $('<div>');
-  feedbackEl.addClass('feedback');
-  feedbackEl.text('No results found. Please try again!');
-  forecastEl.append(feedbackEl);
+  weatherEl.html('');
+  weatherEl.append(`
+  <div class="city-wrapper">
+    <h1 class="city-name">No results found. Please try again!</h1>
+  </div>
+  `);
+  // var feedbackEl = $('<div>');
+  // feedbackEl.addClass('feedback');
+  // feedbackEl.text('No results found. Please try again!');
+  // forecastEl.append(feedbackEl);
 }
 
 // Function that takes in a successful search term and its corresponding country code
@@ -164,6 +279,7 @@ function renderRecentSearches() {
 // Function to show both the day tab and breakdown for the tab that was clicked
 function switchForecast(element) {
   var tab = $(element);
+  var forecastEl = $('.forecast');
 
   // Get the id, and grab the element that needs to be changed
   var id = tab.attr('id').split('-')[1];
@@ -185,14 +301,28 @@ function switchForecast(element) {
 // Function that handles the logic involved for translating received data and displaying it
 function showForecast(weatherDetails) {
   // Clear the old html
-  forecastEl.html('');
+  weatherEl.html('');
 
-  // Add city name to h2 element
-  forecastEl.append(
-    `<h2 class="city-name">Weather conditions for ${
+  weatherEl.append(`
+  <div class="city-wrapper">
+    <h1 class="city-name">Weather conditions for ${
       weatherDetails.name + ', ' + weatherDetails.countryCode
-    }</h2>`
-  );
+    }</h1>
+  </div>
+  `);
+
+  showCurrent(weatherDetails.forecasts[0]);
+
+  // // Add city name to h2 element
+  // forecastEl.append(
+  //   `<h2 class="city-name"><i class="fas fa-map-marker-alt"></i> ${
+  //     weatherDetails.name + ', ' + weatherDetails.countryCode
+  //   }</h2>`
+  // );
+
+  var forecastEl = $('<section>');
+  forecastEl.addClass('forecast column');
+  weatherEl.append(forecastEl);
 
   // Generate an array, days, that includes all days to be covered in forecast (e.g. 28, 29, 30, 31, 1, 2)
   // the ... is a spread operator used to convert the set object into an array
@@ -402,18 +532,18 @@ function doForecast(searchString) {
 
   // Do the API stuff
   // Geocoder API request
-  $.get(`${geocoderBaseURL + searchString}`).then(function (geocoderResult) {
+  $.get(`${geocoderBaseURL + searchString}`).then(function (geocodeResult) {
     // If the geocoder returned nothing, then deal appropriately with that
-    if (geocoderResult.length === 0) {
+    if (geocodeResult.length === 0) {
       noResultsFound();
       return;
     }
 
     // Build up the info about this city
-    weatherDetails.lat = geocoderResult[0].lat;
-    weatherDetails.lon = geocoderResult[0].lon;
-    weatherDetails.name = geocoderResult[0].name;
-    weatherDetails.countryCode = geocoderResult[0].country;
+    weatherDetails.lat = geocodeResult[0].lat;
+    weatherDetails.lon = geocodeResult[0].lon;
+    weatherDetails.name = geocodeResult[0].name;
+    weatherDetails.countryCode = geocodeResult[0].country;
 
     var urlBase = 'https://api.openweathermap.org/data/2.5/';
     var urlParams = `lat=${weatherDetails.lat}&lon=${weatherDetails.lon}&appid=${apiKey}&units=metric`;
@@ -439,9 +569,9 @@ function doForecast(searchString) {
         icon: weatherNow.weather[0].icon,
         windSpeed: convertMetersPerSecondToMilesPerHour(weatherNow.wind.speed),
         windDirection: weatherNow.wind.deg,
-        // sunrise: weatherNow.sys.sunrise + weatherDetails.timezone,
-        // sunset: weatherNow.sys.sunset + weatherDetails.timezone,
-        // visibility: weatherNow.visibility,
+        sunrise: weatherNow.sys.sunrise + weatherDetails.timezone,
+        sunset: weatherNow.sys.sunset + weatherDetails.timezone,
+        visibility: weatherNow.visibility,
       };
 
       // 5-day forecast API request
@@ -466,7 +596,6 @@ function doForecast(searchString) {
         // Now put the forecast about right now into the beginning of the forecast array
         weatherDetails.forecasts.unshift(weatherDetails.now);
         delete weatherDetails.now;
-
         // Now that we've collected and arranged the data, use it to show the data
         showForecast(weatherDetails);
 
@@ -493,7 +622,7 @@ function init() {
       return;
     }
 
-    // If there is a specified country code (i.e. 'gb') then add it to string to use with API
+    // If there is a specified country code (i.e. gb) then add it to string to use with API
     if (countryCode !== '') {
       searchString += ',' + countryCode;
     }
@@ -502,7 +631,7 @@ function init() {
   });
 
   // Day tab click event listener
-  forecastEl.on('click', '.day-tab', function () {
+  weatherEl.on('click', '.day-tab', function () {
     switchForecast($(this));
   });
 
@@ -530,8 +659,8 @@ function init() {
       // If recentSearches array is now empty, remove it from local storage and clear page
       if (recentSearches.length === 0) {
         localStorage.removeItem('weather_search_history');
-        forecastEl.html('');
-        forecastEl.append(`
+        weatherEl.html('');
+        weatherEl.append(`
           <div class="feedback">
             <p>Use the search box on the left to get started.</p>
           </div>
