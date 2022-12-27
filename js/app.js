@@ -42,7 +42,18 @@ function capitaliseFirstCharacter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-/********** FUNCTIONS THAT DO STUFF WITHOUT NEEDING SQUAT **********************/
+// Converts 'new york county,us' into 'New York County, US'
+function formatRecentSearchText(cityAndCode) {
+  var parts = cityAndCode.split(',');
+  var capitalisedCity = parts[0]
+    .split(' ')
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(' ');
+
+  return `${capitalisedCity}, ${parts[1].toUpperCase()}`;
+}
+
+/********** FUNCTIONS THAT DO STUFF WITHOUT NEEDING PARAMS **********************/
 
 // Sets the height of every temperature element in a forecast
 // relative to its parent div, based on the min and max temp for that day
@@ -150,15 +161,26 @@ function renderRecentSearches() {
   }
 
   for (var cityAndCode of recentSearches) {
-    var displayOnlyCity = cityAndCode.split(',')[0]; // could use this instead of below
-    var displayBoth = cityAndCode.split(',').join(', ');
+    console.log(cityAndCode);
+    console.log(formatRecentSearchText(cityAndCode));
     searchHistoryEl.append(`
-      <button value="${cityAndCode}" class="history-button">
-        <span class="button-text">${displayBoth}</span>
-        <span class="close">x</span>
-      </button>
+    <button value="${cityAndCode}" class="history-button">
+      <span class="button-text">${formatRecentSearchText(cityAndCode)}</span>
+      <span class="close">x</span>
+    </button>
     `);
   }
+
+  // for (var cityAndCode of recentSearches) {
+  //   var displayOnlyCity = cityAndCode.split(',')[0]; // could use this instead of below
+  //   var displayBoth = cityAndCode.split(',').join(', ');
+  //   searchHistoryEl.append(`
+  //     <button value="${cityAndCode}" class="history-button">
+  //       <span class="button-text">${displayBoth}</span>
+  //       <span class="close">x</span>
+  //     </button>
+  //   `);
+  // }
 }
 
 // Function to show both the day tab and breakdown for the tab that was clicked
