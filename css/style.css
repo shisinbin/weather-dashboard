@@ -108,7 +108,7 @@ a {
 .wrapper {
   max-width: 81.25em;
   margin: 0 auto;
-  padding: 10px 5%;
+  padding: 10px 2%;
 }
 
 .main-content-structure {
@@ -344,7 +344,8 @@ main section.weather {
   position: absolute;
   left: 50%;
   transform: translate(-50%);
-  bottom: 25%;
+  /* the following will be overwritten by the js logic */
+  bottom: 25%; 
 }
 
 .day-breakdown .day div.hour-details {
