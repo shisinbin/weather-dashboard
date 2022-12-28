@@ -254,7 +254,7 @@ function showCurrentWeather(weatherObj) {
 
   // Creating a Layer object
   var layer = new L.TileLayer(
-    'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
       maxZoom: 10,
       minZoom: 3,
