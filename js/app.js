@@ -10,20 +10,18 @@ var searchHistoryEl = $('.search-history');
 
 // Initialise an array to help with local storage logic
 var recentSearches = [];
+// Initialise a timer variable so that it can be called globally
+var timer;
 
-/*************************** HELPER FUNCTIONS ********************************/
-
-// Converts a Unix timestamp representing a timezone shift
-// to a readable format, such as '-0500' or '+0530'
-function unixToReadableTimeShift(unixTimestamp) {
-  // Convert the unix timestamp (in seconds) to hours
-  var timeShiftInHours = unixTimestamp / 3600;
+// Converts a time shift to be more readable, e.g. 19800 to '+0530', -18000 to '-0500'
+function secondsToReadableTimeShift(timeShiftInSeconds) {
+  var timeShiftInHours = timeShiftInSeconds / 3600;
 
   // Convert the time shift from hours to hours and minutes
   var hours = Math.floor(timeShiftInHours);
   var minutes = Math.round((timeShiftInHours - hours) * 60);
 
-  // Format the time shift as a string
+  // Format the time shift as a string with inline if statements and concatenation
   var readableTimeShift =
     (hours < 0 ? '-' : '+') +
     (Math.abs(hours) < 10 ? '0' : '') +
@@ -32,6 +30,29 @@ function unixToReadableTimeShift(unixTimestamp) {
     minutes;
 
   return readableTimeShift;
+}
+
+function getWindDirectionContext(direction) {
+  switch (true) {
+    case direction >= 337.5 || direction < 22.5:
+      return 'North';
+    case direction >= 22.5 && direction < 67.5:
+      return 'Northeast';
+    case direction >= 67.5 && direction < 112.5:
+      return 'East';
+    case direction >= 112.5 && direction < 157.5:
+      return 'Southeast';
+    case direction >= 157.5 && direction < 202.5:
+      return 'South';
+    case direction >= 202.5 && direction < 247.5:
+      return 'Southwest';
+    case direction >= 247.5 && direction < 292.5:
+      return 'West';
+    case direction >= 292.5 && direction < 337.5:
+      return 'Northwest';
+    default:
+      return 'Invalid direction';
+  }
 }
 
 function convertMetersPerSecondToMilesPerHour(metersPerSecond) {
@@ -53,9 +74,7 @@ function formatRecentSearchText(cityAndCode) {
   return `${capitalisedCity}, ${parts[1].toUpperCase()}`;
 }
 
-/********** FUNCTIONS THAT DO STUFF WITHOUT NEEDING PARAMS **********************/
-
-// Sets the height of every temperature element in a forecast
+// Sets the height of every temperature element in forecast breakdown
 // relative to its parent div, based on the min and max temp for that day
 function setTempHeight() {
   // For each day tab, get the id, max and min
@@ -116,10 +135,102 @@ function noResultsFound() {
   feedbackEl.addClass('feedback');
   feedbackEl.text('No results found. Please try again!');
   weatherEl.append(feedbackEl);
+  $('.search').select();
 }
 
-// Function that takes in a successful search term and its corresponding country code
-// and adds this to local storage
+// Inject the current weather section using the first forecast object
+function showCurrentWeather(weatherObj) {
+  var sunrise = moment
+    .unix(weatherObj.sunrise)
+    .utcOffset(weatherObj.timezone / 60)
+    .format('HH:mm');
+  var sunset = moment
+    .unix(weatherObj.sunset)
+    .utcOffset(weatherObj.timezone / 60)
+    .format('HH:mm');
+
+  var currentEl = $('<section>');
+  currentEl.addClass('current');
+
+  currentEl.append(`
+  <div class="overview column">
+    <h1>Now</h1>
+    <p class="temp">${Math.round(weatherObj.temp)}°C</p>
+    <p>${capitaliseFirstCharacter(weatherObj.description)}.</p>
+    <p>Feels like: ${Math.round(weatherObj.feelsLike)}°C</p>
+    <p>Wind: 
+      ${Math.round(weatherObj.windSpeed)} mph&nbsp;
+      <i 
+        class="fas fa-long-arrow-alt-down"
+        style="transform: rotate(${weatherObj.windDirection}deg);
+        -webkit-transform: rotate(${weatherObj.windDirection}deg);
+        font-size: 1.1rem"
+      ></i>&nbsp;
+    from ${getWindDirectionContext(weatherObj.windDirection)}</p>
+    <img
+      src="${iconBaseURL + weatherObj.icon + '.png'}"
+      width="80px"
+      height="80px"
+      alt="${weatherObj.description}"
+    />
+  </div>
+
+  <table>
+    <tr>
+      <td><strong>Current time</strong></td>
+      <td id="clock"></td>
+    </tr>
+    <tr>
+      <td><strong>Visibility</strong></td>
+      <td>${Math.round(weatherObj.visibility)} km</td>
+    </tr>
+    <tr>
+      <td><strong>Humidity</strong></td>
+      <td>${Math.round(weatherObj.humidity)}%</td>
+    </tr>
+    <tr>
+      <td><strong>Sunrise</strong></td>
+      <td>${sunrise}</td>
+    </tr>
+    <tr>
+      <td><strong>Sunset</strong></td>
+      <td>${sunset}</td>
+    </tr>
+  </table>
+
+  <div class="map"></div>
+  `);
+  // <tr>
+  //   <td><strong>Pressure</strong></td>
+  //   <td>${Math.round(weatherObj.pressure)} hPa</td>
+  // </tr>
+
+  weatherEl.append(currentEl);
+
+  // Work out the UTC offset, in minutes, of the forecast timestamp
+  var timestamp = moment.unix(weatherObj.timestamp);
+  var timezoneOffset = timestamp
+    .utcOffset(weatherObj.timezone / 60)
+    .utcOffset();
+
+  // clear previous timer, if applicable
+  clearTimeout(timer);
+
+  // Immediately do one iteration before entering timer where we use the offset
+  // to rejig the current time when we call moment()
+  var currentTime = moment().utcOffset(timezoneOffset);
+  var timeString = currentTime.format('D MMM YYYY, HH:mm:ss');
+  $('#clock').text(timeString);
+
+  // Start the timer
+  timer = setInterval(function () {
+    currentTime = moment().utcOffset(timezoneOffset);
+    timeString = currentTime.format('D MMM YYYY, HH:mm:ss');
+    $('#clock').text(timeString);
+  }, 1000);
+}
+
+// Update recentSearches array with successful search, and use it to update local storage
 function updateRecentSearches(newSuccessfulSearch, countryCode) {
   var combinedSearch =
     newSuccessfulSearch.toLowerCase() + ',' + countryCode.toLowerCase();
@@ -149,7 +260,7 @@ function updateRecentSearches(newSuccessfulSearch, countryCode) {
   renderRecentSearches();
 }
 
-// Function that uses local storage to help render the recent searches bar
+// Uses local storage to render recent searches
 function renderRecentSearches() {
   searchHistoryEl.html('');
   recentSearches = JSON.parse(localStorage.getItem('weather_search_history'));
@@ -168,8 +279,8 @@ function renderRecentSearches() {
   }
 }
 
-// Function to show both the day tab and breakdown for the tab that was clicked
-function switchForecast(element) {
+// Switches between different days in the forecast
+function switchDayInForecast(element) {
   var tab = $(element);
   // Get the id, and grab the element that needs to be changed
   var id = tab.attr('id').split('-')[1];
@@ -189,8 +300,8 @@ function switchForecast(element) {
   forecastEl.children(`#breakdown-${id}`).removeClass('hide');
 }
 
-// Function that handles the logic involved for translating received data and displaying it
-function showForecast(weatherDetails) {
+// Handles the bulk of the logic for showing the weather, given an object containing weather details
+function showWeather(weatherDetails) {
   // Clear the old html
   weatherEl.html('');
 
@@ -201,10 +312,11 @@ function showForecast(weatherDetails) {
     }</h2>`
   );
 
-  // Here's the logic for the NOW weather
+  showCurrentWeather(weatherDetails.forecasts[0]);
 
   var forecastEl = $('<section>');
   forecastEl.addClass('forecast column');
+  forecastEl.append(`<h1>Forecast</h1>`);
   weatherEl.append(forecastEl);
 
   // Generate an array, days, that includes all days to be covered in forecast (e.g. 28, 29, 30, 31, 1, 2)
@@ -228,15 +340,26 @@ function showForecast(weatherDetails) {
       (forecast) => forecast.dayMonth === days[i]
     );
 
-    // a quick check to see if for the first day, if there is only 1 forecast,
-    // i.e. the NOW forecast, then skip it as there's no value to including it
-    if (i === 0 && thisDaysForecasts.length === 1) {
-      // move to the next day
-      start = days[1];
-      continue;
+    // Checks to make on first iteration due to quirks of first day
+    if (i === 0) {
+      // If length is 1, then skip to next day as no point in repeating this NOW forecast
+      if (thisDaysForecasts.length === 1) {
+        // adjust pointer variable
+        start = days[1];
+        continue;
+      }
+      // If length is 9, which can happen with some timezones, then just take
+      // out the first NOW forecast as it doesn't give much value
+      if (thisDaysForecasts.length > 8) {
+        thisDaysForecasts.shift();
+      }
     }
 
-    var thisDaysMoment = moment(thisDaysForecasts[0].unix, 'X');
+    var thisDaysMoment = moment
+      .unix(thisDaysForecasts[0].timestamp)
+      .utcOffset(weatherDetails.timezone / 60);
+
+    // var thisDaysMoment = moment(thisDaysForecasts[0].unix, 'X');
 
     // Start to build an object for this day, starting with date stuff
     var thisDay = {
@@ -351,19 +474,27 @@ function showForecast(weatherDetails) {
       dayEl.append(`
         <div class="hour column">
           <p>${thisDaysForecasts[i].hour}</p>
-          <div><img src="${iconurl}" alt="${
-        thisDaysForecasts[i].description
-      }"></div>
-          <div class="temp"><p>${Math.round(
-            thisDaysForecasts[i].temp
-          )}°</p></div>
-          <p>${Math.round(
-            thisDaysForecasts[i].windSpeed
-          )} <i class="fas fa-arrow-circle-down" style="transform: rotate(${
-        thisDaysForecasts[i].windDirection
-      }deg); -webkit-transform: rotate(${
-        thisDaysForecasts[i].windDirection
-      }deg);font-size: 1.1rem"></i></p>
+          <div><img 
+            src="${iconurl}"
+            alt="${thisDaysForecasts[i].description}"
+            width="50px"
+            height="50px"
+          /></div>
+          <div class="temp">
+            <p>${Math.round(thisDaysForecasts[i].temp)}°</p>
+          </div>
+          <p>${Math.round(thisDaysForecasts[i].windSpeed)}
+            <i 
+              class="fas fa-arrow-circle-down"
+              style="transform: rotate(${
+                thisDaysForecasts[i].windDirection
+              }deg);
+              -webkit-transform: rotate(${
+                thisDaysForecasts[i].windDirection
+              }deg);
+              font-size: 1.1rem"
+            ></i>
+          </p>
           <p>${thisDaysForecasts[i].humidity}%</p>
         </div>
       `);
@@ -372,7 +503,7 @@ function showForecast(weatherDetails) {
     // Add another element to the day that describes what each bit of info is
     dayEl.append(`
       <div class="hour column hour-details">
-        <p><small>(UTC${unixToReadableTimeShift(
+        <p><small>(UTC${secondsToReadableTimeShift(
           weatherDetails.timezone
         )})</small></p>
         <p style="flex-grow:1"></p>
@@ -389,9 +520,14 @@ function showForecast(weatherDetails) {
       <div class="day-tab column" id="tab-${thisDay.dateDay}">
         <p class="f-1">${thisDay.dateShort}</p>
         <div class="tab-details row align-center">
-          <div class="f-1"><img src="${thisDay.iconurl}" alt="${
-      thisDay.description
-    }"></div>
+          <div class="f-1">
+            <img
+              src="${thisDay.iconurl}"
+              alt="${thisDay.description}"
+              width="50px"
+              height="50px"
+            />
+          </div>
           <div class="column text-center f-1">
             <p class="max">${Math.round(highestTemp)}°</p>
             <p class="min"><small>${Math.round(lowestTemp)}°</small></p>
@@ -419,8 +555,8 @@ function showForecast(weatherDetails) {
   setTempHeight();
 }
 
-// Function that handles the API calls, filtering the data required about 41 forecasts
-function doForecast(searchString) {
+// Function that handles the API calls, filters the data into an object that can be used to show the weather
+function doWeatherForecast(searchString) {
   // Initialise an object that we'll use to build weather info for all days
   var weatherDetails = {};
 
@@ -449,14 +585,17 @@ function doForecast(searchString) {
 
       // Add a temporary object that holds the weather data for right now
       weatherDetails.now = {
-        unix: weatherNow.dt + weatherDetails.timezone,
+        timestamp: weatherNow.dt,
         dayMonth: Number(
-          moment(weatherNow.dt + weatherDetails.timezone, 'X').format('D')
+          moment
+            .unix(weatherNow.dt)
+            .utcOffset(weatherDetails.timezone / 60)
+            .format('D')
         ),
-        // dayWeek: moment(weatherNow.dt, 'X').format('ddd'),
-        hour: moment(weatherNow.dt + weatherDetails.timezone, 'X').format(
-          'HH:mm'
-        ),
+        hour: moment
+          .unix(weatherNow.dt)
+          .utcOffset(weatherDetails.timezone / 60)
+          .format('HH:mm'),
         temp: weatherNow.main.temp,
         humidity: weatherNow.main.humidity,
         description: weatherNow.weather[0].description,
@@ -466,22 +605,29 @@ function doForecast(searchString) {
         // extra stuff below
         feelsLike: weatherNow.main.feels_like,
         pressure: weatherNow.main.pressure,
-        sunrise: weatherNow.sys.sunrise + weatherDetails.timezone,
-        sunset: weatherNow.sys.sunset + weatherDetails.timezone,
+        sunrise: weatherNow.sys.sunrise,
+        sunset: weatherNow.sys.sunset,
         visibility: weatherNow.visibility,
+        lat: weatherNow.coord.lat,
+        lon: weatherNow.coord.lon,
+        timezone: weatherDetails.timezone, // need this for calculating current time for first object
       };
 
       // 5-day forecast API request
       $.get(`${urlBase}forecast?${urlParams}`).then(function (forecast) {
         // Filter the data from the API to only include details interested in
         weatherDetails.forecasts = forecast.list.map((aForecast) => ({
-          unix: aForecast.dt + weatherDetails.timezone,
+          timestamp: aForecast.dt,
           dayMonth: Number(
-            moment(aForecast.dt + weatherDetails.timezone, 'X').format('D')
+            moment
+              .unix(aForecast.dt)
+              .utcOffset(weatherDetails.timezone / 60)
+              .format('D')
           ),
-          hour: moment(aForecast.dt + weatherDetails.timezone, 'X').format(
-            'HH:mm'
-          ),
+          hour: moment
+            .unix(aForecast.dt)
+            .utcOffset(weatherDetails.timezone / 60)
+            .format('HH:mm'),
           temp: aForecast.main.temp,
           humidity: aForecast.main.humidity,
           description: aForecast.weather[0].description,
@@ -495,8 +641,7 @@ function doForecast(searchString) {
         delete weatherDetails.now;
 
         // Now that we've collected and arranged the data, use it to show the data
-        console.log(weatherDetails);
-        showForecast(weatherDetails);
+        showWeather(weatherDetails);
 
         // Update recent searches column
         updateRecentSearches(weatherDetails.name, weatherDetails.countryCode);
@@ -505,9 +650,9 @@ function doForecast(searchString) {
   });
 }
 
-// Function to load on page load
+// Load page
 function init() {
-  // Render recent searches from local storage if applicable
+  // Render recent searches from local storage, if applicable
   renderRecentSearches();
 
   // Form submit event listener
@@ -526,18 +671,18 @@ function init() {
       searchString += ',' + countryCode;
     }
     // Do the forecast
-    doForecast(searchString);
+    doWeatherForecast(searchString);
   });
 
   // Day tab click event listener
   weatherEl.on('click', '.day-tab', function () {
-    switchForecast($(this));
+    switchDayInForecast($(this));
   });
 
   // Recent search click event listener
   searchHistoryEl.on('click', 'button', function () {
     var searchString = $(this).val();
-    doForecast(searchString);
+    doWeatherForecast(searchString);
 
     // Update the text in the search bar to reflect the search history item
     $('.search').val(`${searchString.split(',')[0]}`);
