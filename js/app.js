@@ -55,6 +55,17 @@ function getWindDirectionContext(direction) {
   }
 }
 
+// Converts km to m, to at most one decimal place
+function metresToKilometres(valueInMetres) {
+  var valueInKilometres = valueInMetres / 1000;
+
+  if (Number.isInteger(valueInKilometres)) {
+    return valueInKilometres;
+  }
+
+  return Number(valueInKilometres.toFixed(1));
+}
+
 function convertMetersPerSecondToMilesPerHour(metersPerSecond) {
   return metersPerSecond * 2.23693629;
 }
@@ -182,7 +193,7 @@ function showCurrentWeather(weatherObj) {
     </tr>
     <tr>
       <td><strong>Visibility</strong></td>
-      <td>${Math.round(weatherObj.visibility)} km</td>
+      <td>${metresToKilometres(weatherObj.visibility)} km</td>
     </tr>
     <tr>
       <td><strong>Humidity</strong></td>
@@ -198,13 +209,13 @@ function showCurrentWeather(weatherObj) {
     </tr>
   </table>
 
-  <div class="map"></div>
+  <div id="map" style="width:300px; height:200px;" class="map"></div>
   `);
   // <tr>
   //   <td><strong>Pressure</strong></td>
   //   <td>${Math.round(weatherObj.pressure)} hPa</td>
   // </tr>
-
+  console.log(weatherObj.visibility);
   weatherEl.append(currentEl);
 
   // Work out the UTC offset, in minutes, of the forecast timestamp
@@ -228,6 +239,35 @@ function showCurrentWeather(weatherObj) {
     timeString = currentTime.format('D MMM YYYY, HH:mm:ss');
     $('#clock').text(timeString);
   }, 1000);
+
+  var lat = weatherObj.lat;
+  var lon = weatherObj.lon;
+
+  // Creating map options
+  var mapOptions = {
+    center: [lat, lon],
+    zoom: 6,
+  };
+
+  // Creating a map object
+  var map = new L.map('map', mapOptions);
+
+  // Creating a Layer object
+  var layer = new L.TileLayer(
+    'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+      maxZoom: 10,
+      minZoom: 3,
+      attribution:
+        'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+    }
+  );
+
+  // Adding layer to the map
+  map.addLayer(layer);
+
+  var marker = new L.marker([lat, lon]);
+  marker.addTo(map);
 }
 
 // Update recentSearches array with successful search, and use it to update local storage
