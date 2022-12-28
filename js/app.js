@@ -188,23 +188,23 @@ function showCurrentWeather(weatherObj) {
 
   <table>
     <tr>
-      <td><strong>Current time</strong></td>
+      <td><strong>Current time:</strong></td>
       <td id="clock"></td>
     </tr>
     <tr>
-      <td><strong>Visibility</strong></td>
+      <td><strong>Visibility:</strong></td>
       <td>${metresToKilometres(weatherObj.visibility)} km</td>
     </tr>
     <tr>
-      <td><strong>Humidity</strong></td>
+      <td><strong>Humidity:</strong></td>
       <td>${Math.round(weatherObj.humidity)}%</td>
     </tr>
     <tr>
-      <td><strong>Sunrise</strong></td>
+      <td><strong>Sunrise:</strong></td>
       <td>${sunrise}</td>
     </tr>
     <tr>
-      <td><strong>Sunset</strong></td>
+      <td><strong>Sunset:</strong></td>
       <td>${sunset}</td>
     </tr>
   </table>
