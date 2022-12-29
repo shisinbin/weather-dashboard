@@ -786,11 +786,12 @@ init();
     THe request returns a single object with around 3-4 properties, the only one we are interested in is
     the 'features' property which returns an array of objects representing locations.
 
-    This array is then transformed 3 times:
-    1. Filter out the returned objects and cherry pick the data we are interested in
-    2. Filter out any results that return 'undefined' for either city, country_code or country
+    This array is then transformed 4 times:
+    1. Filter out the returned objects and cherry pick the data we are interested in (city, country, code)
+    2. Filter out any results that return 'undefined' anywhere
     3. Filter out results to only show unique ones (the API could return multiple items
        all with the same city, country and country_code but slightly different locations)
+    4. Make the country code uppercase for superficial reasons
 
     Finally the filtered array of objects with both label and value properties is returned
     in the response.
@@ -824,7 +825,7 @@ function addAutocompleteFeature() {
           });
           // console.log(results);
 
-          // some rejigging to only include results that have cities and countries
+          // some rejigging to only include valid city results
           var filteredResults = results.filter(function (result) {
             return (
               !result.label.includes('undefined') &&
@@ -841,6 +842,12 @@ function addAutocompleteFeature() {
                 return otherResult.label === result.label;
               }) === index
             );
+          });
+
+          // last bit of formatting to capitalize the country code
+          uniqueResults.forEach((obj) => {
+            var [city, code] = obj.value.split(',');
+            obj.value = `${city},${code.toUpperCase()}`;
           });
 
           // console.log(uniqueResults);
