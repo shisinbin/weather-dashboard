@@ -800,6 +800,8 @@ init();
 
     There's also an event listener for when a list item is selected, which is really easy.
 
+    A final thing: if the user ignores the autocomplete list and presses enter,
+    then to clear the autocomplete list there needs to a specific event listener for that
 */
 var geoapifyApiKey = '9634b8d64110479ebf267e2b2dae0528';
 var searchTextInput = $('#search-text');
@@ -864,6 +866,14 @@ function addAutocompleteFeature() {
       // console.log(ui.item);
       doWeatherForecast(ui.item.value);
     },
+  });
+
+  // event listener for if the user ignores the autocomplete list
+  // and presses enter - it basically clears the autocomplete list
+  searchTextInput.keydown(function (event) {
+    if (event.keyCode === 13) {
+      searchTextInput.autocomplete('close');
+    }
   });
 }
 
