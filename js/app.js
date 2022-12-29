@@ -819,9 +819,7 @@ function addAutocompleteFeature() {
           var results = result.features.map(function (feature) {
             return {
               label: `${feature.properties.city}, ${feature.properties.country}`,
-              value: `${
-                feature.properties.city
-              },${feature.properties.country_code.toUpperCase()}`,
+              value: `${feature.properties.city},${feature.properties.country_code}`,
             };
           });
           // console.log(results);
