@@ -215,7 +215,7 @@ function showCurrentWeather(weatherObj) {
   //   <td><strong>Pressure</strong></td>
   //   <td>${Math.round(weatherObj.pressure)} hPa</td>
   // </tr>
-  console.log(weatherObj.visibility);
+
   weatherEl.append(currentEl);
 
   // Work out the UTC offset, in minutes, of the forecast timestamp
@@ -256,7 +256,7 @@ function showCurrentWeather(weatherObj) {
   var layer = new L.TileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
-      maxZoom: 10,
+      maxZoom: 15,
       minZoom: 3,
       attribution:
         'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
@@ -765,3 +765,101 @@ function init() {
 }
 
 init();
+
+/*
+                                  AUTOCOMPLETE USING GEOCODER API
+
+    The following code covers using a geocoder (GeoApify) to help fill an autocomplete list when
+    the user enters text in the search field
+
+    To achieve this, first requirement is an API key which I got from https://myprojects.geoapify.com/.
+    According to thier free plan, 3,000 requests are allowed per day, so should be okay to use
+
+    The code specifies the minimum number of characters (4) that a user enters before a search is performed
+
+    The jQuery function .ajax() is used to make an HTTP GET request to the API. The nifty thing with this is
+    that it breaks down long urls by putting the parameters (text, apiKey, limit) into an object
+
+    The text parameter is set to the value of the search text input (request.term), and results are
+    limited to 5
+
+    THe request returns a single object with around 3-4 properties, the only one we are interested in is
+    the 'features' property which returns an array of objects representing locations.
+
+    This array is then transformed 3 times:
+    1. Filter out the returned objects and cherry pick the data we are interested in
+    2. Filter out any results that return 'undefined' for either city, country_code or country
+    3. Filter out results to only show unique ones (the API could return multiple items
+       all with the same city, country and country_code but slightly different locations)
+
+    Finally the filtered array of objects with both label and value properties is returned
+    in the response.
+
+    Pretty cool stuff.
+
+    There's also an event listener for when a list item is selected, which is really easy.
+
+*/
+var geoapifyApiKey = '9634b8d64110479ebf267e2b2dae0528';
+var searchTextInput = $('#search-text');
+
+function addAutocompleteFeature() {
+  searchTextInput.autocomplete({
+    minLength: 4,
+    source: function (request, response) {
+      $.ajax({
+        url: `https://api.geoapify.com/v1/geocode/autocomplete`,
+        data: {
+          text: request.term,
+          apiKey: geoapifyApiKey,
+          limit: 5,
+        },
+        success: function (result) {
+          // create an array of objects with label and value properties from the API response
+          var results = result.features.map(function (feature) {
+            return {
+              label: `${feature.properties.city}, ${feature.properties.country}`,
+              value: `${
+                feature.properties.city
+              },${feature.properties.country_code.toUpperCase()}`,
+            };
+          });
+          // console.log(results);
+
+          // some rejigging to only include results that have cities and countries
+          var filteredResults = results.filter(function (result) {
+            return (
+              !result.label.includes('undefined') &&
+              !result.value.includes('undefined')
+            );
+          });
+
+          // console.log(filteredResults);
+
+          // drop duplicates
+          var uniqueResults = filteredResults.filter(function (result, index) {
+            return (
+              filteredResults.findIndex(function (otherResult) {
+                return otherResult.label === result.label;
+              }) === index
+            );
+          });
+
+          // console.log(uniqueResults);
+          // pass the unique results array to the response callback
+          response(uniqueResults);
+        },
+        error: function (error) {
+          console.log('error', error);
+        },
+      });
+    },
+    // select event listener
+    select: function (event, ui) {
+      // console.log(ui.item);
+      doWeatherForecast(ui.item.value);
+    },
+  });
+}
+
+addAutocompleteFeature();
