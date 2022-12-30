@@ -303,11 +303,17 @@ function updateRecentSearches(newSuccessfulSearch, countryCode) {
 // Uses local storage to render recent searches
 function renderRecentSearches() {
   searchHistoryEl.html('');
+
   recentSearches = JSON.parse(localStorage.getItem('weather_search_history'));
   if (recentSearches === null) {
     recentSearches = [];
     return;
   }
+
+  searchHistoryEl.append(
+    `<p style="color:darkgray;text-align:center;margin-top:10px;margin-bottom:5px;font-size:1.2rem">Recent Searches</p>`
+  );
+
   // Iterate through stored searches, adding a button for each one
   for (var cityAndCode of recentSearches) {
     searchHistoryEl.append(`
@@ -749,6 +755,7 @@ function init() {
             <p>Use the search box on the left to get started.</p>
           </div>
         `);
+        searchHistoryEl.html('');
         $('.search').val('');
         $('.search').select();
         // Otherwise just update local storage to reflect changes made
@@ -870,6 +877,7 @@ function addAutocompleteFeature() {
 
   // event listener for if the user ignores the autocomplete list
   // and presses enter - it basically clears the autocomplete list
+  // note - doesn't always work (due to asynchronicity??)
   searchTextInput.keydown(function (event) {
     if (event.keyCode === 13) {
       searchTextInput.autocomplete('close');

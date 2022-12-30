@@ -161,6 +161,15 @@ section.search-panel {
   outline: none;
 }
 
+.search-panel form .search-wrapper {
+  transition: transform 0.2s ease-in-out;
+  transform: scale(1);
+}
+
+.search-panel form .search-wrapper:hover, .search-panel form .search-wrapper:focus-within {
+  transform: scale(1.1);
+}
+
 .search-panel form input.search::placeholder {
   color: var(--primary);
 }
@@ -208,14 +217,22 @@ section.search-panel {
   display: inline-block;
   padding: 12px 20px;
   border-radius: 4px;
-  border: none;
-  background: var(--primaryMuted);
-  color: var(--secondary);
+  border: 1px dotted #cacaca;
+  background: none;
+  color: darkgray;
   cursor: pointer;
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+/* cute way of adding a degree of tactileness or feedback when button is clicked */
+.search-history .history-button:focus-within {
+  border: 1px solid var(--primary);
 }
 
 .search-history .history-button:hover {
-  color: var(--highlight);
+  color: var(--text);
+  background: azure;
+  /* border: 1px solid #cacaca; */
 }
 
 .search-history .history-button span.button-text {
@@ -226,13 +243,16 @@ section.search-panel {
   position: absolute; /* this positions the x element relative to parent */
   top: 1px;
   right: 2px;
-  color: var(--secondary);
+  color: darkgray;
   cursor: pointer;
   padding: 0 3px;
+  /* transition: transform 0.2s ease-in-out; */
+  /* transform: scale(1); */
 }
 
 .search-history .history-button .close:hover {
-  color: red;
+  color: deeppink;
+  /* transform: scale(1.2); */
 }
 
 /** Weather Section **/
@@ -319,6 +339,9 @@ main section.weather {
   background: #F0F0F0;
   border-radius: 1px;
   min-width: 100px;
+  /* transition: transform 0.2s ease-in-out; */
+  /* transform: scale(1); */
+  transition: background-color 0.2s ease-in-out;
 }
 
 .days .day-tab.selected {
@@ -331,6 +354,7 @@ main section.weather {
 .days .day-tab:hover {
   background: var(--background);
   border-bottom: 1px solid var(--background);
+  /* transform: scale(1.1); */
 }
 
 .days .day-tab div.tab-details {
