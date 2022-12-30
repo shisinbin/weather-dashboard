@@ -166,9 +166,13 @@ section.search-panel {
   transform: scale(1);
 }
 
-.search-panel form .search-wrapper:hover, .search-panel form .search-wrapper:focus-within {
+.search-panel form .search-wrapper:hover {
   transform: scale(1.1);
 }
+
+/* .search-panel form .search-wrapper:focus-within {
+  transform: scale(1.1);
+} */
 
 .search-panel form input.search::placeholder {
   color: var(--primary);
