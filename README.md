@@ -60,6 +60,8 @@ Finally, to make your search more specific, you can follow the city name with a 
 
 Autocomplete is the only really one maybe. Perhaps I can drop this section and describe the autocomplete feature in the section above.
 
+Maybe also the fact that the time blocks adapt correctly to different timezones (including giving user bit of info about each timezone with both the clock and the descriptive 'UTC+0530' thing).
+
 ## Limitations
 
 Not really supported by wide browsers (would need to make forecast element horizontally scrollable)
@@ -69,6 +71,8 @@ search results from the api - could maybe show the top 3 results and get the use
 not a big fan of chaining get requests. learning about parsing 'promises' into separate functions might be worth looking into (can't really do that at the moment due to asynchronous nature of requests and my current knowledge level)
 
 finally, aesthetics. firstly i'm limited by the icon images, which are small and kinda dated. there is [this cool resource](https://erikflowers.github.io/weather-icons/) that I have experimented with, but found it doesn't mesh well with my current layout. in a weird sort of way, my layout (the pastel colours, the uncohesiveness of it) looks better with the dated icons, which is kinda worrying. but anyway, if I improve my knowledge and skills with design, then that resource is definately something to bear in mind in future especially if I want to hide away sections (recent searches being the main one) and make it more mobile friendly. and just generally, I'm not good at figuring out nice layouts and colour schemes, this doesn't come naturally (yet or ever??)
+
+another limitation: the fact that the api only gives free forecast data about every third hour, and other limitations of the data like how it's difficult to decipher chances of precipitation from the mm of rain expected within a time block.
 
 ## Credits
 
