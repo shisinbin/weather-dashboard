@@ -1,41 +1,77 @@
 # Weather Dashboard
 
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![jQuery](https://img.shields.io/badge/jquery-%230769AD.svg?style=for-the-badge&logo=jquery&logoColor=white) <img alt='moment.js badge' src='https://shields.io/badge/Moment.js-grey?logo=appveyor&style=for-the-badge'>
+
+![screenshot of the app](img/_ss0.png)
+
 ## Description
 
-A weather dashboard app that allows the user to search for cities around the world and view its 5-day forecast.
+A weather dashboard app that allows a user to view both the current and forecasted weather conditions for any city in the world.
 
-## Usage
+This app was developed to help further my understanding of how to access data from a back-end server. Specifically, how to fetch weather data using the [OpenWeatherMap API](https://openweathermap.org/api) and then use this data to dynamically update HTML and CSS.
 
-This app works with the [OpenWeatherMap API](https://openweathermap.org/api) to fetch weather data, before dynamically updating the page. The app is accessible at the link below.
+While working on this app, I gained valuable experience in working with APIs and also had the opportunity to further develop my front-end skills.
+
+## Getting Started
+
+To access the app, navigate to the link below in a browser on a device that supports a wide layout.
 
 https://cozy-sprinkles-a45830.netlify.app/
 
-The user can view the forecast for a different day by clicking on a different date tab. Users can also quickly search for a recently searched city again by clicking on its button which should be located in the recent history column on the left of the page.
+You can search for a city by using the search bar at the top left of the page or by clicking on a recently searched city below the search bar.
 
-![screenshot of console output](img/ss1.png)
+![screenshot of page on first load](img/_ss1.png)
 
-![screenshot of console output](img/ss2.png)
+You can limit your searches to UK cities by checking the 'UK' radio button below the search bar.
 
-More details (better description, fuller instructions including screenshots, credit section) later.
+![screenshot of radio buttons under search bar](img/_ss2.png)
 
-**Update 28 Dec**: after doing some more work, particularly adding a 'Now' section, the look of the app has changed to something below.
+If the OpenWeatherMap API is unable to find a city that matches your search term, you will receive appropriate feedback.
 
-![screenshot of console output](img/ss3.png)
+![screenshot of feedback given when searching incorrectly](img/_ss3.png)
 
-I've spent a ton of work on this to be honest but I've learnt a lot. It's really important that I document how I did several things, if only so that I can look back and understand things myself. Off the top of my head, the things that stand out are:
+If the OpenWeatherMap API is able to find a city that matches your search term, you will be presented with the weather conditions for that city.
 
-- `position: absolute`, `position: relative`, for taking elements out of the flow of the page but bounded by its parent. Really useful for positioning items (e.g., the 'x' close button for recent searches, the larger icon in the 'Now' panel, the temperatures in the hourly breakdown)
-- A lot of stuff to do with Moment.js, particularly understanding UTC time, UTC offsets, yada yada
-- Using global CSS rules, e.g. a `wrapper` class for wrapping elements to a certain width or with common padding and margin
-- using `.map()` and `.filter()` to cherry-pick data, e.g. getting all the days of the month from a single property in an array of objects, or filtering an array of forecasts based on a condition.
-- a bit of stuff on regex or character mapping (`.match()`) which was useful for ensuring the -ve sign was considered when converting a string to a number
-- integrating maps, so both Leaflet and OpenStreetMap
-- stopping event propagation, which was important when the 'x' was clicked in a parent element that also had an event listener
+![screenshot of a typical search result](img/_ss4.png)
 
-On top of that
+The weather conditions are displayed in two sections: the current weather conditions and the forecasted weather conditions.
 
-- more practice with translating logic or pseudocode into actual code
-- dealing with error debugging (a lot of console.log()ing)
-- spending a bunch of time trying to get things to look a certain way, or position themselves how I want them to
-- spending an even greater amount of time on colour schemes and layout (struggled big time here tbh)
-- more practice with jQuery and taking advantage of how it makes some things easier, particularly traversal, looping and fetching API data
+In the current weather conditions section, you can view information about a city's current weather, the current date and time, and its location via an interactive map.
+
+![screenshot of the section showing the current weather conditions](img/_ss5.png)
+
+In the forecast section, you can view information about the weather for every third hour for the next 5-6 days. You can view the forecast for a specific day by clicking on one of the day 'tabs'. Each tab displays the maximum and minimum temperature for that day.
+
+![screenshot of a different day's forecast being viewed](img/_ss6.png)
+
+Recent searches are stored on your local browser storage and are used to dynamically update the Recent Searches section of the webpage. The section displays a maximum of eight recent searches, listed in order of most recent to least recent.
+
+![screenshot of recent search buttons](img/_ss7.png)
+
+You can remove a single recent search from local storage by clicking the 'x' in the top right corner of its button.
+
+![screenshot of how a recent search button can be removed](img/_ss8.png)
+
+Finally, to make your search more specific, you can follow the city name with a comma and its country code (please refer to [ISO 3166](https://www.iso.org/obp/ui/#search) for codes).
+
+![screenshot of how a recent search button can be removed](img/_ss9.png)
+
+## Features
+
+Autocomplete is the only really one maybe. Perhaps I can drop this section and describe the autocomplete feature in the section above.
+
+## Limitations
+
+Not really supported by wide browsers (would need to make forecast element horizontally scrollable)
+
+search results from the api - could maybe show the top 3 results and get the user to click the one that applies
+
+not a big fan of chaining get requests. learning about parsing 'promises' into separate functions might be worth looking into (can't really do that at the moment due to asynchronous nature of requests and my current knowledge level)
+
+## Credits
+
+Wow, gonna include a bunch here. In terms of inspiration, defo BBC Weather, Met Office, and particularly TimeAndDate.com
+
+## Documentation
+
+Maybe links to the docs for OpenWeatherMap Api, Geoapify, jQuery UI, etc, etc
