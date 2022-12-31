@@ -68,6 +68,8 @@ search results from the api - could maybe show the top 3 results and get the use
 
 not a big fan of chaining get requests. learning about parsing 'promises' into separate functions might be worth looking into (can't really do that at the moment due to asynchronous nature of requests and my current knowledge level)
 
+finally, aesthetics. firstly i'm limited by the icon images, which are small and kinda dated. there is [this cool resource](https://erikflowers.github.io/weather-icons/) that I have experimented with, but found it doesn't mesh well with my current layout. in a weird sort of way, my layout (the pastel colours, the uncohesiveness of it) looks better with the dated icons, which is kinda worrying. but anyway, if I improve my knowledge and skills with design, then that resource is definately something to bear in mind in future especially if I want to hide away sections (recent searches being the main one) and make it more mobile friendly. and just generally, I'm not good at figuring out nice layouts and colour schemes, this doesn't come naturally (yet or ever??)
+
 ## Credits
 
 Wow, gonna include a bunch here. In terms of inspiration, defo BBC Weather, Met Office, and particularly TimeAndDate.com

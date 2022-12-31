@@ -2,7 +2,7 @@
 
 So I want to document my thoughts and experiences when working on this app in a cohesive way so that I can come back to this app and understand how I did a lot of the stuff in it. I think some kind of blog post would be suitable. Or maybe just a separate md file, which I've now created.
 
-I'll deal with this later (it's not New Year's Even 2022).
+I'll deal with this later (it's now New Year's Eve 2022).
 
 ![screenshot of console output](img/ss1.png)
 
