@@ -460,7 +460,7 @@ footer p {
 
   .search-panel form input.search {
     font-size: 1.4rem;
-    max-width: 300px;
+    max-width: 250px;
   }
 
   .search-panel form {
@@ -469,7 +469,8 @@ footer p {
   }
 
   .search-panel form div.search-wrapper {
-    max-width: 100%;
+    grid-template-columns: 0.8fr auto;
+    margin: 0 auto;
   }
 
   .search-panel form div.radio-container {
