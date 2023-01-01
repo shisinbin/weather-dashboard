@@ -461,9 +461,9 @@ footer p {
   .search-panel form div.search-wrapper {
     margin: 0 20px;
   }
-  .search-panel form input.search {
+  /* .search-panel form input.search {
     font-size: 1.4rem;
-  }
+  } */
   .search-panel form div.radio-container {
     margin-right: 22px;
     margin-top: 15px;
