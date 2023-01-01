@@ -475,6 +475,7 @@ footer p {
 
   .search-panel form div.radio-container {
     margin-top: 15px;
+    margin-right: 10px;
   }
   .search-panel form .radio-item label {
     font-size: 1rem;
