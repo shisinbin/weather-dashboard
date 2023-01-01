@@ -460,6 +460,7 @@ footer p {
 
   .search-panel form input.search {
     font-size: 1.4rem;
+    box-sizing: border-box !important; 
   }
 
   .search-panel form {
