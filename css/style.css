@@ -468,6 +468,10 @@ footer p {
     margin: 0 auto;
   }
 
+  .search-panel form div.search-wrapper {
+    max-width: 100%;
+  }
+
   .search-panel form div.radio-container {
     margin-top: 15px;
   }
