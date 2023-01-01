@@ -311,7 +311,14 @@ function renderRecentSearches() {
   }
 
   searchHistoryEl.append(
-    `<p style="color:darkgray;text-align:center;margin-top:10px;margin-bottom:5px;font-size:1.2rem">Recent Searches</p>`
+    `<p class="recent-search-header" style="color:darkgray;text-align:center;margin-top:10px;margin-bottom:5px;font-size:1.2rem">
+      <span id="collapse-down-arrow">
+        <i class="fas fa-chevron-down"></i>
+      </span>
+      <span id="collapse-up-arrow">
+        <i class="fas fa-chevron-up"></i>
+      </span>&nbsp; Recent Searches
+    </p>`
   );
 
   // Iterate through stored searches, adding a button for each one
@@ -353,9 +360,9 @@ function showWeather(weatherDetails) {
 
   // Add city name to h2 element
   weatherEl.append(
-    `<h2 class="city-name">Weather conditions for ${
+    `<h2 class="city-name">Weather conditions for <span class="location">${
       weatherDetails.name + ', ' + weatherDetails.countryCode
-    }</h2>`
+    }</span></h2>`
   );
 
   showCurrentWeather(weatherDetails.forecasts[0]);
@@ -886,3 +893,11 @@ function addAutocompleteFeature() {
 }
 
 addAutocompleteFeature();
+
+// mobile devices stuff
+
+searchHistoryEl.on('click', '.recent-search-header', function () {
+  $(this).siblings().toggleClass('expanded');
+  $(this).children().toggleClass('expanded');
+  console.log('i am being clicked');
+});
