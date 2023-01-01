@@ -520,11 +520,10 @@ footer p {
   }
 
   div.days {
-    width: 360px;
+    width: 350px;
     margin: 0 auto;
     overflow-x: scroll;
     white-space: nowrap;
-    border:1px solid cadetblue;
     gap: 5px;
     grid-template-rows: 0.2fr 1fr;
   }
@@ -549,7 +548,7 @@ footer p {
   }
 
   .forecast .day-breakdown div.day {
-    width: 360px;
+    width: 350px;
     margin: 0 auto;
     overflow-x: scroll;
     white-space: nowrap;

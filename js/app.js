@@ -146,7 +146,7 @@ function noResultsFound() {
   feedbackEl.addClass('feedback');
   feedbackEl.text('No results found. Please try again!');
   weatherEl.append(feedbackEl);
-  $('.search').select();
+  // $('.search').select(); // not mobile-friendly
 }
 
 // Inject the current weather section using the first forecast object
@@ -602,7 +602,8 @@ function showWeather(weatherDetails) {
   $(`#tab-${start}`).children('.tab-description').removeClass('hide');
 
   // Highlights the text selection in the search bar
-  $('.search').select();
+  // $('.search').select();
+  // commenting above out as not great with mobile
 
   // Sort out the heights for the temperatures in each time block for each day
   setTempHeight();
@@ -739,7 +740,7 @@ function init() {
 
     // Update the text in the search bar to reflect the search history item
     $('.search').val(`${searchString.split(',')[0]}`);
-    $('.search').select();
+    // $('.search').select(); // not mobile-friendly
   });
 
   // Removing recent search event listener
