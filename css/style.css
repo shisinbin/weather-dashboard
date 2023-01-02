@@ -438,6 +438,7 @@ main section.weather {
 }
 
 .day-breakdown .day .hour .temp p {
+  /* font-size:1.2rem; */
   position: absolute;
   left: 50%;
   transform: translate(-50%);
@@ -493,6 +494,32 @@ footer p {
   display: inline-block;
 }
 
+/* wind wrap */
+.wind-wrap {
+  height:40px;
+  position: relative;
+  font-size: 1rem;
+}
+.wind-wrap p {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  z-index: 2;
+  color:#FFFFFF;
+}
+.wind-wrap img {
+  position: absolute;
+  left: 50%;
+  top:52%;
+  z-index: 1;
+  height: 50px;
+  /* to black */
+  /* filter: invert(1); */
+  /* or to blue */
+  /* filter: invert(0.5) sepia(1) saturate(5) hue-rotate(180deg); */
+  filter: invert(0.3)
+}
 
 /**** MOBILE ****/
 

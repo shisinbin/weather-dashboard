@@ -540,25 +540,40 @@ function showWeather(weatherDetails) {
             />
           </div>
           <div class="temp">
-            <p>${Math.round(thisDaysForecasts[i].temp)}°</p>
+            <p><strong>${Math.round(thisDaysForecasts[i].temp)}°</strong></p>
           </div>
-          <p>${Math.round(thisDaysForecasts[i].windSpeed)}
-            <i 
-              class="fas fa-arrow-circle-down"
-              style="transform: rotate(${
-                thisDaysForecasts[i].windDirection
-              }deg);
-              -webkit-transform: rotate(${
-                thisDaysForecasts[i].windDirection
-              }deg);
-              font-size: 1.1rem"
-            ></i>
-          </p>
+          <div class="wind-wrap">
+            <p>${Math.round(thisDaysForecasts[i].windSpeed)}</p>
+            <img
+              src="img/wind_direction.svg"
+              alt="wind direction"
+              style="
+                transform:
+                  translate(-50%,-50%)
+                  rotate(${thisDaysForecasts[i].windDirection + 180}deg);
+                -webkit-transform:
+                  translate(-50%,-50%)
+                  rotate(${thisDaysForecasts[i].windDirection + 180}deg)";
+            />
+          </div>
           <p>${thisDaysForecasts[i].humidity}%</p>
         </div>
       `);
     }
 
+    // I replaced the code below with the wind-wrap block in the code above
+    // <p>
+    //   ${Math.round(thisDaysForecasts[i].windSpeed)}
+    //   <i
+    //     class='fas fa-arrow-circle-down'
+    //     style='
+    //        transform: rotate(${thisDaysForecasts[i].windDirection}deg);
+    //        -webkit-transform: rotate(${thisDaysForecasts[i].windDirection}deg);
+    //        font-size: 1.1rem'
+    //   ></i>
+    // </p>;
+
+    var windWrapIconStyleForDetailColumn = 'style="height: 40px"';
     // Add another element to the day that describes what each bit of info is
     dayEl.append(`
       <div class="hour column hour-details">
@@ -568,7 +583,7 @@ function showWeather(weatherDetails) {
         <p style="flex-grow:1"></p>
         <div class="temp" style="border:none"><p style="left: 0%;
         transform: none"><small>(°C)</small></p></div>
-        <p><small>Wind (mph)</small></p>
+        <div ${windWrapIconStyleForDetailColumn} class="column justify-center"><p><small>Wind (mph)</small></p></div>
         <p><small>Humidity</small></p>
       </div>
     `);
