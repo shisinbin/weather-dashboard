@@ -401,6 +401,9 @@ function showWeather(weatherDetails) {
       if (thisDaysForecasts.length === 1) {
         // adjust pointer variable
         start = days[1];
+
+        // also need to correct the number of days in the forecast header
+        $('#forecast-header').text(`${days.length - 1} Day Forecast`);
         continue;
       }
       // If length is 9, which can happen with some timezones, then just take
