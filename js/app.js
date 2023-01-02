@@ -420,7 +420,7 @@ function showWeather(weatherDetails) {
     var thisDay = {
       dateDay: Number(thisDaysMoment.format('D')),
       dateShort: thisDaysMoment.format('ddd D'),
-      dateLong: thisDaysMoment.format('dddd D'),
+      dateLong: thisDaysMoment.format('dddd D MMMM'),
     };
 
     /* Now some logic to ensure that the selected icon and corresponding description
