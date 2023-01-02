@@ -2,7 +2,11 @@
 
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![jQuery](https://img.shields.io/badge/jquery-%230769AD.svg?style=for-the-badge&logo=jquery&logoColor=white) <img alt='moment.js badge' src='https://shields.io/badge/Moment.js-grey?logo=appveyor&style=for-the-badge'>
 
-![screenshot of the app](img/_ss0.png)
+<p style="text-align:left" width="100%">
+    <img width="65%" src="img/demo.gif">
+</p>
+
+<br>
 
 ## Description
 
@@ -10,7 +14,11 @@ A weather dashboard app that allows a user to view both the current and forecast
 
 This app was developed to help further my understanding of how to access data from a back-end server. Specifically, how to fetch weather data using the [OpenWeatherMap API](https://openweathermap.org/api) and then use this data to dynamically update HTML and CSS.
 
-While working on this app, I gained valuable experience in working with APIs and also had the opportunity to further develop my front-end skills.
+I went further by learning how to work with [Leaflet](https://leafletjs.com/), a framework for presenting map data, and [Geoapify](https://www.geoapify.com/), a location-based API which was used for integrating an autocomplete feature for city searches.
+
+While working on this app, I gained valuable experience in working with APIs and further developed my front-end skills in HTML, CSS and JavaScript.
+
+<br>
 
 ## Getting Started
 
@@ -44,13 +52,21 @@ In the forecast section, you can view information about the weather for every th
 
 ![screenshot of a different day's forecast being viewed](img/_ss6.png)
 
-Recent searches are stored on your local browser storage and are used to dynamically update the Recent Searches section of the webpage. The section displays a maximum of eight recent searches, listed in order of most recent to least recent.
+<br>
 
-![screenshot of recent search buttons](img/_ss7.png)
+### Adding a search to recent history
+
+Recent searches are stored on your local browser storage and are used to dynamically update the Recent Searches section of the webpage. A maximum of eight recent searches are displayed, listed in order of most recent to least recent.
+
+<img width="65%" src="img/_ss7.gif" alt="city being added to recent searches">
+
+<br>
+
+### Removing a search from recent history
 
 You can remove a single recent search from local storage by clicking the 'x' in the top right corner of its button.
 
-![screenshot of how a recent search button can be removed](img/_ss8.png)
+<img width="35%" src="img/_ss8.gif" alt="city being removed from recent searches">
 
 Finally, to make your search more specific, you can follow the city name with a comma and its country code (please refer to [ISO 3166](https://www.iso.org/obp/ui/#search) for codes).
 

@@ -721,6 +721,8 @@ function doWeatherForecast(searchString) {
 
         // Update recent searches column
         updateRecentSearches(weatherDetails.name, weatherDetails.countryCode);
+
+        $('#search-text').autocomplete('close');
       });
     });
   });
@@ -807,20 +809,20 @@ init();
                                   AUTOCOMPLETE USING GEOCODER API
 
     The following code covers using a geocoder (GeoApify) to help fill an autocomplete list when
-    the user enters text in the search field
+    the user enters text in the search field.
 
     To achieve this, first requirement is an API key which I got from https://myprojects.geoapify.com/.
-    According to thier free plan, 3,000 requests are allowed per day, so should be okay to use
+    According to thier free plan, 3,000 requests are allowed per day, so should be okay to use.
 
-    The code specifies the minimum number of characters (4) that a user enters before a search is performed
+    The code specifies the minimum number of characters (4) that a user enters before a search is performed.
 
     The jQuery function .ajax() is used to make an HTTP GET request to the API. The nifty thing with this is
-    that it breaks down long urls by putting the parameters (text, apiKey, limit) into an object
+    that it breaks down long urls by putting the parameters (text, apiKey, limit) into an object.
 
     The text parameter is set to the value of the search text input (request.term), and results are
-    limited to 5
+    limited to 5.
 
-    THe request returns a single object with around 3-4 properties, the only one we are interested in is
+    The request returns a single object with around 3-4 properties, the only one we are interested in is
     the 'features' property which returns an array of objects representing locations.
 
     This array is then transformed 4 times:
@@ -838,7 +840,7 @@ init();
     There's also an event listener for when a list item is selected, which is really easy.
 
     A final thing: if the user ignores the autocomplete list and presses enter,
-    then to clear the autocomplete list there needs to a specific event listener for that
+    then to clear the autocomplete list there needs to a specific event listener for that.
 */
 var geoapifyApiKey = '9634b8d64110479ebf267e2b2dae0528';
 var searchTextInput = $('#search-text');
