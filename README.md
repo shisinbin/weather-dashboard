@@ -3,10 +3,8 @@
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![jQuery](https://img.shields.io/badge/jquery-%230769AD.svg?style=for-the-badge&logo=jquery&logoColor=white) <img alt='moment.js badge' src='https://shields.io/badge/Moment.js-grey?logo=appveyor&style=for-the-badge'>
 
 <p style="text-align:left" width="100%">
-    <img width="65%" src="img/demo.gif">
+    <img width="100%" src="img/demo.gif">
 </p>
-
-<br>
 
 ## Description
 
@@ -17,8 +15,6 @@ This app was developed to help further my understanding of how to access data fr
 I went further by learning how to work with [Leaflet](https://leafletjs.com/), a framework for presenting map data, and [Geoapify](https://www.geoapify.com/), a location-based API which was used for integrating an autocomplete feature for city searches.
 
 While working on this app, I gained valuable experience in working with APIs and further developed my front-end skills in HTML, CSS and JavaScript.
-
-<br>
 
 ## Getting Started
 
@@ -52,15 +48,11 @@ In the forecast section, you can view information about the weather for every th
 
 ![screenshot of a different day's forecast being viewed](img/_ss6.png)
 
-<br>
-
 ### Adding a search to recent history
 
 Recent searches are stored on your local browser storage and are used to dynamically update the Recent Searches section of the webpage. A maximum of eight recent searches are displayed, listed in order of most recent to least recent.
 
 <img width="65%" src="img/_ss7.gif" alt="city being added to recent searches">
-
-<br>
 
 ### Removing a search from recent history
 
