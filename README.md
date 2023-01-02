@@ -10,7 +10,7 @@
 
 Welcome to my weather dashboard app! With this app, you can view the current and forecasted weather conditions for any city in the world.
 
-This app was built to help improve my skills with working with APIs and accessing data from a back-end server. I learned how to use the [OpenWeatherMap API](https://openweathermap.org/api) to fetch weather data and use it to dynamically update the page's HTML and CSS. I also learned how to work with [Leaflet](https://leafletjs.com/), a map data framework, and [Geoapify](https://www.geoapify.com/), a location-based API that I used to add an autocomplete feature for city searches.
+This app was built to help improve my skills with working with APIs and accessing data from a back-end server. I learned how to use the [OpenWeatherMap API](https://openweathermap.org/api) to fetch weather data and use it to dynamically update a webpage's HTML and CSS. I also learned how to work with [Leaflet](https://leafletjs.com/), a map data framework, and [Geoapify](https://www.geoapify.com/), a location-based API that I used to add an autocomplete feature for city searches.
 
 While working on this project, I gained valuable experience in front-end development using HTML, CSS, and JavaScript. I hope you enjoy using the app as much as I enjoyed building it!
 
@@ -82,15 +82,15 @@ Forecasts are only available every third hour, with a maximum of 40 forecasts (u
 
 The web app currently has limited support for browser sizes other than wide desktop or mobile. It may not display or function correctly on browsers with intermediate sizes.
 
-The icon image quality is poor, which makes it difficult to increase its size and the icons themselves are rather dated.
+The icon image quality is poor, which makes it difficult to increase its size, and the icons themselves are rather dated.
 
 ## Future enhancements
 
-Right now, the app makes a series of get requests and chains them together before using the modified data to call another function. In the future, I want to use promises and handle asynchronous calls better by breaking the get requests into separate functions. This will make the app faster and easier to maintain.
+Right now, the app chains together a series of get requests before using the modified data to call another function. In the future, I want to use promises and handle asynchronous calls better by breaking the get requests into separate functions. This will make the app easier to maintain and perhaps faster as well.
 
-Another thing I'd like to improve is the app's support for intermediate browser sizes. Currently, it works great on wide desktop browsers and mobile devices, but there's not much support for sizes in between. I want to make the app more responsive and look good on all browser sizes.
+Another thing I'd like to improve is the app's support for intermediate browser sizes. Currently, it works well on wide desktop browsers and mobile devices, but there's not much support for sizes in between. I want to make the app more responsive and look good on all browser sizes.
 
-The app's layout and design work fine, but I want to make it look nicer and more modern. I'll keep working on the layout and color scheme to make it more attractive and sleek. I also want to upgrade the weather icons to something more modern and high-quality to make the app a better overall experience ([this resource](https://erikflowers.github.io/weather-icons/) might help).
+The app's layout and design work fine, but I would like to make it nicer and more modern. I will work on the layout and color scheme in future to make it more attractive and sleek. I also think it would be a good idea to use higher quality weather icons to make for a better overall experience, and [this resource](https://erikflowers.github.io/weather-icons/) looks like it might help.
 
 ## Credits
 
