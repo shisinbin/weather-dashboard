@@ -216,6 +216,15 @@ section.search-panel {
 .search-panel div.search-history {
   gap: 10px;
 }
+
+.search-panel .recent-search-header {
+  color:darkgray;
+  text-align:center;
+  margin-top:10px;
+  margin-bottom:5px;
+  font-size:1.2rem;
+}
+
 .search-history button.history-button {
   position: relative; /*needed to position the x */
   display: inline-block;
@@ -316,7 +325,7 @@ main section.weather {
 
 /* Forecast Section */
 .weather section.forecast {
-  padding: 15px;
+  /* padding: 15px; */
   /* border-left: 10px solid #fffacd; lemonchiffon */
   background: var(--background);
 }
@@ -324,6 +333,7 @@ main section.weather {
 .forecast h1 {
   font-size: 2rem;
   margin-bottom: 20px;
+  padding-left: 10px;
 }
 
 /* day tabs */
@@ -332,33 +342,53 @@ main section.weather {
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: 0.6fr 1fr;
   text-align: center;
+  gap:5px;
+  overflow-y:hidden;
 }
 
 .days div.day-tab {
   grid-column: span 1;
   grid-row: 2/3;
   padding: 10px;
-  border: 1px solid #cacaca;
   cursor:pointer;
+
+  /* border: 1px solid #cacaca;
   background: #F0F0F0;
   border-radius: 1px;
-  min-width: 100px;
+  min-width: 100px; */
+
   /* transition: transform 0.2s ease-in-out; */
   /* transform: scale(1); */
   /* transition: background-color 0.2s ease-in-out; */
+
+  background: lightgoldenrodyellow;
 }
+
+/* #b5d8ff and #00b8d4
+#d1e1ff and #73a1c2
+#b0d8e2 and #4aa1bb
+#b4e1f3 and #46a3d3
+#d0e8f8 and #78bcd6 */
 
 .days .day-tab.selected {
   grid-column: span 2;
   grid-row: 1/3;
-  background: var(--background);
-  border-bottom: 1px solid var(--background);
+  /* background: var(--background);
+  border-bottom: 1px solid var(--background); */
+  background: #fded91; /*#ffd700;*/
+}
+
+.day-tab.selected p:first-child {
+  font-size: 1.2rem;
 }
 
 .days .day-tab:hover {
-  background: var(--background);
-  border-bottom: 1px solid var(--background);
+  /* background: var(--background);
+  border-bottom: 1px solid var(--background); */
+
   /* transform: scale(1.1); */
+
+  background: #fded91;
 }
 
 .days .day-tab div.tab-details {
@@ -369,6 +399,7 @@ main section.weather {
 /* day breakdowns */
 .forecast div.day-breakdown {
   gap: 10px;
+  /* background: #fded91; */
 }
 
 .day-breakdown h3.day-date {
@@ -385,7 +416,8 @@ main section.weather {
   padding-right: auto;
   padding-top: 20px;
   padding-bottom: 20px;
-  background: #eef0fb;
+  /* background: #eef0fb; */
+  background: aliceblue;
   text-align: center;
   gap: 20px;
 }
@@ -435,18 +467,43 @@ footer p {
   color: var(--secondary);
 }
 
+/*** EXTRAS ***/
+
+/* These arrow icons are mobile only features, so need to hide them on desktop */
 #collapse-down-arrow, #collapse-up-arrow {
   display: none;
 }
 
-/* .search-panel .search-history .recent-search-header i {
-  display: none;
-} */
+/* The following two are for the forecast hour img tooltips */
+.img-wrap {
+  position:relative;
+}
+.tooltip {
+  position: absolute;
+  top: 105%;
+  left: 50%;
+  transform: translate(-50%, -10px);
+  z-index: 9999;
+  background-color: #007BFF;
+  color: #FFFF00;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  text-align: center;
+  display: inline-block;
+}
+
+
+/**** MOBILE ****/
 
 @media only screen and (max-width: 480px) {
 
   body {
     overflow-x: hidden;
+  }
+
+  #header-span-weather {
+    display: none;
   }
 
   .main-content-structure {
@@ -545,6 +602,7 @@ footer p {
     padding-right: 5px;
   }
   .weather section.forecast h1 {
+    padding-left: 0;
     text-align: center;
   }
 
@@ -556,6 +614,10 @@ footer p {
     gap: 5px;
     grid-template-rows: 0.2fr 1fr;
   }
+  .day-tab.selected p:first-child {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+  }
 
   .days div.day-tab {
     border: none;
@@ -566,8 +628,12 @@ footer p {
 
   .days .day-tab.selected {
     width: 150px;
-    background: gold;
+    background: #fdea7d;
     padding-top:15px;
+  }
+
+  .forecast div.day-breakdown {
+    margin-bottom:20px;
   }
 
   .day-breakdown h3.day-date {
@@ -576,7 +642,7 @@ footer p {
     padding-top:10px;
   }
 
-  .forecast .day-breakdown div.day {
+  .forecast .day-breakdown {
     width: 350px;
     margin: 0 auto;
     overflow-x: scroll;
@@ -586,6 +652,32 @@ footer p {
   .day div.hour {
     width: 70px;
   }
+
+  .weather div.feedback {
+    font-size: 1.3rem;
+  }
+
+  /* style the scrollbar thumb */
+  /* ::-webkit-scrollbar-thumb {
+    background-color: #bab8b8;
+    border-radius: 10px;
+  } */
+
+  /* style the scrollbar track */
+  /* ::-webkit-scrollbar-track {
+    background-color: #f5f5f5;
+    border-radius: 10px;
+  } */
+
+  /* style the scrollbar */
+  /* ::-webkit-scrollbar {
+    width: 12px;
+    background-color: #f5f5f5;
+  } */
+
+  /* .day-breakdown div.day {
+    padding-bottom: 20px;
+  } */
 
 
 }

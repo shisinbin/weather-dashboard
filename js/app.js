@@ -311,7 +311,7 @@ function renderRecentSearches() {
   }
 
   searchHistoryEl.append(
-    `<p class="recent-search-header" style="color:darkgray;text-align:center;margin-top:10px;margin-bottom:5px;font-size:1.2rem">
+    `<p class="recent-search-header">
       <span id="collapse-down-arrow">
         <i class="fas fa-chevron-down"></i>
       </span>
@@ -367,16 +367,18 @@ function showWeather(weatherDetails) {
 
   showCurrentWeather(weatherDetails.forecasts[0]);
 
-  var forecastEl = $('<section>');
-  forecastEl.addClass('forecast column');
-  forecastEl.append(`<h1>Forecast</h1>`);
-  weatherEl.append(forecastEl);
-
   // Generate an array, days, that includes all days to be covered in forecast (e.g. 28, 29, 30, 31, 1, 2)
   // the ... is a spread operator used to convert the set object into an array
   days = [
     ...new Set(weatherDetails.forecasts.map((forecast) => forecast.dayMonth)),
   ];
+
+  var forecastEl = $('<section>');
+  forecastEl.addClass('forecast column');
+  forecastEl.append(
+    `<h1 id="forecast-header">${days.length} Day Forecast</h1>`
+  );
+  weatherEl.append(forecastEl);
 
   // this is a pointer variable needed for css stuff
   var start = days[0];
@@ -527,12 +529,16 @@ function showWeather(weatherDetails) {
       dayEl.append(`
         <div class="hour column">
           <p>${thisDaysForecasts[i].hour}</p>
-          <div><img 
-            src="${iconurl}"
-            alt="${thisDaysForecasts[i].description}"
-            width="50px"
-            height="50px"
-          /></div>
+          <div class="img-wrap">
+            <img 
+              src="${iconurl}"
+              alt="${thisDaysForecasts[i].description}"
+              width="50px"
+              height="50px"
+              style="position:relative"
+              title=""
+            />
+          </div>
           <div class="temp">
             <p>${Math.round(thisDaysForecasts[i].temp)}°</p>
           </div>
@@ -760,7 +766,7 @@ function init() {
         weatherEl.html('');
         weatherEl.append(`
           <div class="feedback">
-            <p>Use the search box on the left to get started.</p>
+            <p>Use the search bar to get started.</p>
           </div>
         `);
         searchHistoryEl.html('');
@@ -895,10 +901,43 @@ function addAutocompleteFeature() {
 
 addAutocompleteFeature();
 
-// mobile devices stuff
+/*
+                         Mobile-friendly features
+    So this is just an event listener that listens for when the recent search header
+    (a p element) is clicked. It toggles the class to both its siblings (the buttons)
+    and its children (the arrows).
+*/
 
-searchHistoryEl.on('click', '.recent-search-header', function () {
-  $(this).siblings().toggleClass('expanded');
-  $(this).children().toggleClass('expanded');
-  console.log('i am being clicked');
-});
+function addMobileFriendlyFeatures() {
+  searchHistoryEl.on('click', '.recent-search-header', function () {
+    $(this).siblings().toggleClass('expanded');
+    $(this).children().toggleClass('expanded');
+  });
+}
+
+addMobileFriendlyFeatures();
+
+/*
+                         A tooltip feature
+    For the images in the forecast breakdown.
+    Having both event listeners mouseenter and mouseleave is the equivalent of hover.
+    Got to set style="display:none" on the p element so that fadeIn works
+*/
+
+function addToolTipFeature() {
+  weatherEl.on('mouseenter', '.img-wrap', function () {
+    // grab the alt text
+    var altText = capitaliseFirstCharacter($(this).children('img').attr('alt'));
+    // add a new tooltip element using this text
+    $('<p class="tooltip" style="display:none"></p>')
+      .text(altText)
+      .appendTo($(this))
+      .fadeIn('slow');
+  });
+  weatherEl.on('mouseleave', '.img-wrap', function () {
+    // remove this tooltip element
+    $(this).children('.tooltip').remove();
+  });
+}
+
+addToolTipFeature();
