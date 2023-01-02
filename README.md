@@ -22,17 +22,15 @@ To access the app, navigate to the link below in a browser on a device that supp
 
 https://cozy-sprinkles-a45830.netlify.app/
 
-You can search for a city by using the search bar at the top left of the page or by clicking on a recently searched city below the search bar.
+### Searching for cities
 
-![screenshot of page on first load](img/_ss1.png)
+You can search for a city by using the search bar at the top left of the page or by clicking on a recently searched city below the search bar. To make your search more specific, you can follow the city name with a comma and its country code (please refer to [ISO 3166](https://www.iso.org/obp/ui/#search) for codes).
 
-You can limit your searches to UK cities by checking the 'UK' radio button below the search bar.
+<img width="60%" src="img/_ss1.gif">
 
-![screenshot of radio buttons under search bar](img/_ss2.png)
+You can also limit your searches to UK cities by checking the 'UK' radio button below the search bar, and if the API is unable to find a city that matches your search term, you will receive appropriate feedback.
 
-If the OpenWeatherMap API is unable to find a city that matches your search term, you will receive appropriate feedback.
-
-![screenshot of feedback given when searching incorrectly](img/_ss3.png)
+### Understanding the layout
 
 If the OpenWeatherMap API is able to find a city that matches your search term, you will be presented with the weather conditions for that city.
 
@@ -48,21 +46,11 @@ In the forecast section, you can view information about the weather for every th
 
 ![screenshot of a different day's forecast being viewed](img/_ss6.png)
 
-### Adding a search to recent history
+### Adding and removing searches to recent history
 
-Recent searches are stored on your local browser storage and are used to dynamically update the Recent Searches section of the webpage. A maximum of eight recent searches are displayed, listed in order of most recent to least recent.
+Recent searches are stored on your local browser storage and are used to dynamically update the Recent Searches section of the webpage. A maximum of eight recent searches are displayed, listed in order of most recent to least recent. You can remove a single recent search from local storage by clicking the 'x' in the top right corner of its button.
 
-<img width="65%" src="img/_ss7.gif" alt="city being added to recent searches">
-
-### Removing a search from recent history
-
-You can remove a single recent search from local storage by clicking the 'x' in the top right corner of its button.
-
-<img width="35%" src="img/_ss8.gif" alt="city being removed from recent searches">
-
-Finally, to make your search more specific, you can follow the city name with a comma and its country code (please refer to [ISO 3166](https://www.iso.org/obp/ui/#search) for codes).
-
-![screenshot of how a recent search button can be removed](img/_ss9.png)
+<img width="35%" src="img/_ss6.gif" alt="city being added to recent searches">
 
 ## Features
 
