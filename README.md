@@ -3,18 +3,16 @@
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![jQuery](https://img.shields.io/badge/jquery-%230769AD.svg?style=for-the-badge&logo=jquery&logoColor=white) <img alt='moment.js badge' src='https://shields.io/badge/Moment.js-grey?logo=appveyor&style=for-the-badge'>
 
 <p style="text-align:left" width="100%">
-    <img width="100%" src="img/demo.gif">
+    <img width="80%" src="img/demo.gif">
 </p>
 
 ## Description
 
-A weather dashboard app that allows a user to view both the current and forecasted weather conditions for any city in the world.
+Welcome to my weather dashboard app! With this app, you can view the current and forecasted weather conditions for any city in the world.
 
-This app was developed to help further my understanding of how to access data from a back-end server. Specifically, how to fetch weather data using the [OpenWeatherMap API](https://openweathermap.org/api) and then use this data to dynamically update HTML and CSS.
+This app was built to help improve my skills with working with APIs and accessing data from a back-end server. I learned how to use the [OpenWeatherMap API](https://openweathermap.org/api) to fetch weather data and use it to dynamically update the page's HTML and CSS. I also learned how to work with [Leaflet](https://leafletjs.com/), a map data framework, and [Geoapify](https://www.geoapify.com/), a location-based API that I used to add an autocomplete feature for city searches.
 
-I went further by learning how to work with [Leaflet](https://leafletjs.com/), a framework for presenting map data, and [Geoapify](https://www.geoapify.com/), a location-based API which was used for integrating an autocomplete feature for city searches.
-
-While working on this app, I gained valuable experience in working with APIs and further developed my front-end skills in HTML, CSS and JavaScript.
+While working on this project, I gained valuable experience in front-end development using HTML, CSS, and JavaScript. I hope you enjoy using the app as much as I enjoyed building it!
 
 ## Getting Started
 
