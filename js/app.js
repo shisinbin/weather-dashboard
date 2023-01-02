@@ -573,6 +573,7 @@ function showWeather(weatherDetails) {
     //   ></i>
     // </p>;
 
+    // If I go back to previous, then easy solution is to change below to ''
     var windWrapIconStyleForDetailColumn = 'style="height: 40px"';
     // Add another element to the day that describes what each bit of info is
     dayEl.append(`
