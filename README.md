@@ -18,7 +18,7 @@ While working on this app, I gained valuable experience in working with APIs and
 
 ## Getting Started
 
-To access the app, navigate to the link below in a browser on a device that supports a wide layout.
+To access the app, navigate to the link below in a browser on a device that supports a wide layout (or alternatively on mobile).
 
 https://cozy-sprinkles-a45830.netlify.app/
 
@@ -32,13 +32,13 @@ You can also limit your searches to UK cities by checking the 'UK' radio button 
 
 ### Understanding the layout
 
-If the OpenWeatherMap API is able to find a city that matches your search term, you will be presented with the weather conditions for that city.
+If the API is able to find a city that matches your search term, you will be presented with the weather conditions for that city.
 
 ![screenshot of a typical search result](img/_ss4.png)
 
 The weather conditions are displayed in two sections: the current weather conditions and the forecasted weather conditions.
 
-In the current weather conditions section, you can view information about a city's current weather, the current date and time, and its location via an interactive map.
+In the current weather conditions section, you can view current weather information (including wind speed and direction), the current date and time, and the location via an interactive map.
 
 ![screenshot of the section showing the current weather conditions](img/_ss5.png)
 
@@ -48,27 +48,51 @@ In the forecast section, you can view information about the weather for every th
 
 ### Adding and removing searches to recent history
 
-Recent searches are stored on your local browser storage and are used to dynamically update the Recent Searches section of the webpage. A maximum of eight recent searches are displayed, listed in order of most recent to least recent. You can remove a single recent search from local storage by clicking the 'x' in the top right corner of its button.
+Successful city searches are stored on your local browser storage and are used to dynamically update the Recent Searches section of the webpage. A maximum of eight recent searches are displayed, listed in order of most recent to least recent. You can remove a single recent search from local storage by clicking the 'x' in the top right corner of its button.
 
 <img width="35%" src="img/_ss6.gif" alt="city being added to recent searches">
 
+### Mobile layout
+
+The weather dashboard is now mobile-friendly! The following image demonstrates the functionality on mobile.
+
+<img width="35%" src="img/demo_mobile.gif" alt="city being added to recent searches">
+
 ## Features
 
-Autocomplete is the only really one maybe. Perhaps I can drop this section and describe the autocomplete feature in the section above.
+### Smart city search with autocomplete
 
-Maybe also the fact that the time blocks adapt correctly to different timezones (including giving user bit of info about each timezone with both the clock and the descriptive 'UTC+0530' thing).
+Our smart city search feature uses autocomplete to provide suggestions as you type, making it easy to find the city you're looking for. Simply click on a suggestion to initiate a search.
+
+<img width="55%" src="img/_autocomplete.gif" alt="city being added to recent searches">
+
+### Global weather, localised for you
+
+Get the weather information for any city in the world, displayed in terms of the local time. This means you can get accurate and timely weather forecasts no matter where you are.
+
+<img width="55%" src="img/_timezones.gif" alt="city being added to recent searches">
+
+### Explore any location using an interactive map
+
+When you make a search, you'll get a map of the city's location. You can zoom in and out to explore the area.
+
+<img width="55%" src="img/_map.gif" alt="city being added to recent searches">
 
 ## Limitations
 
-Not really supported by wide browsers (would need to make forecast element horizontally scrollable)
+Forecasts are only available every third hour, with a maximum of 40 forecasts (up to 5-6 days). It is not currently possible to include a chance of precipitation in the forecasts due to the limited data available (only rain volume in mm for 3 hours is provided).
 
-search results from the api - could maybe show the top 3 results and get the user to click the one that applies
+The web app currently has limited support for browser sizes other than wide desktop or mobile. It may not display or function correctly on browsers with intermediate sizes.
 
-not a big fan of chaining get requests. learning about parsing 'promises' into separate functions might be worth looking into (can't really do that at the moment due to asynchronous nature of requests and my current knowledge level)
+The icon image quality is poor, which makes it difficult to increase its size and the icons themselves are rather dated.
 
-finally, aesthetics. firstly i'm limited by the icon images, which are small and kinda dated. there is [this cool resource](https://erikflowers.github.io/weather-icons/) that I have experimented with, but found it doesn't mesh well with my current layout. in a weird sort of way, my layout (the pastel colours, the uncohesiveness of it) looks better with the dated icons, which is kinda worrying. but anyway, if I improve my knowledge and skills with design, then that resource is definately something to bear in mind in future especially if I want to hide away sections (recent searches being the main one) and make it more mobile friendly. and just generally, I'm not good at figuring out nice layouts and colour schemes, this doesn't come naturally (yet or ever??)
+## Future enhancements
 
-another limitation: the fact that the api only gives free forecast data about every third hour, and other limitations of the data like how it's difficult to decipher chances of precipitation from the mm of rain expected within a time block.
+Right now, the app makes a series of get requests and chains them together before using the modified data to call another function. In the future, I want to use promises and handle asynchronous calls better by breaking the get requests into separate functions. This will make the app faster and easier to maintain.
+
+Another thing I'd like to improve is the app's support for intermediate browser sizes. Currently, it works great on wide desktop browsers and mobile devices, but there's not much support for sizes in between. I want to make the app more responsive and look good on all browser sizes.
+
+The app's layout and design work fine, but I want to make it look nicer and more modern. I'll keep working on the layout and color scheme to make it more attractive and sleek. I also want to upgrade the weather icons to something more modern and high-quality to make the app a better overall experience ([this resource](https://erikflowers.github.io/weather-icons/) might help).
 
 ## Credits
 

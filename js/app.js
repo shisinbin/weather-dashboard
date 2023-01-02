@@ -553,7 +553,10 @@ function showWeather(weatherDetails) {
                   rotate(${thisDaysForecasts[i].windDirection + 180}deg);
                 -webkit-transform:
                   translate(-50%,-50%)
-                  rotate(${thisDaysForecasts[i].windDirection + 180}deg)";
+                  rotate(${thisDaysForecasts[i].windDirection + 180}deg)"
+              title="wind blowing from ${
+                thisDaysForecasts[i].windDirection
+              } degrees true north"
             />
           </div>
           <p>${thisDaysForecasts[i].humidity}%</p>
