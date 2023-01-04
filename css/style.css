@@ -456,6 +456,11 @@ main section.weather {
   min-width:80px;
 }
 
+.attribution {
+  color: darkgray;
+  margin-top:10px;
+}
+
 /*** FOOTER ***/
 
 footer {

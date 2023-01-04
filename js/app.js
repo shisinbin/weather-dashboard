@@ -622,6 +622,24 @@ function showWeather(weatherDetails) {
     forecastEl.append(breakdownEl);
   }
 
+  forecastEl.append(`
+  <div class="attribution row justify-center align-center">
+    <p>Weather data provided by </p>
+    <a 
+      href="https://openweathermap.org/"
+      target="_blank"
+    >
+      <img 
+        src="img/OpenWeather-Master-Logo RGB.png"
+        height="60px"
+        alt="OpenWeather logo"
+        title="OpenWeather">
+    </a>
+    
+    
+  </div>
+  `);
+
   // Show the breakdown for the first day
   $(`#breakdown-${start}`).removeClass('hide');
 
