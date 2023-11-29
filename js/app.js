@@ -1,28 +1,28 @@
-var apiKey = '0e8f67bf6ac0e37689d7edea5f37f808';
-var iconBaseURL = 'https://openweathermap.org/img/w/';
-var geocoderBaseURL = `https://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&limit=1&q=`;
+const apiKey = '0e8f67bf6ac0e37689d7edea5f37f808';
+const iconBaseURL = 'https://openweathermap.org/img/w/';
+const geocoderBaseURL = `https://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&limit=1&q=`;
 const MAX_NUM_OF_RECENTS = 8;
 
 // Grab HTML elements
-var weatherEl = $('.weather');
-var formEl = $('form');
-var searchHistoryEl = $('.search-history');
+const weatherEl = document.querySelector('.weather');
+const formEl = document.querySelector('form');
+const searchHistoryEl = document.querySelector('.search-history');
 
 // Initialise an array to help with local storage logic
-var recentSearches = [];
-// Initialise a timer variable so that it can be called globally
-var timer;
+let recentSearches = [];
+
+let intervalId;
 
 // Converts a time shift to be more readable, e.g. 19800 to '+0530', -18000 to '-0500'
 function secondsToReadableTimeShift(timeShiftInSeconds) {
-  var timeShiftInHours = timeShiftInSeconds / 3600;
+  const timeShiftInHours = timeShiftInSeconds / 3600;
 
   // Convert the time shift from hours to hours and minutes
-  var hours = Math.floor(timeShiftInHours);
-  var minutes = Math.round((timeShiftInHours - hours) * 60);
+  const hours = Math.floor(timeShiftInHours);
+  const minutes = Math.round((timeShiftInHours - hours) * 60);
 
   // Format the time shift as a string with inline if statements and concatenation
-  var readableTimeShift =
+  const readableTimeShift =
     (hours < 0 ? '-' : '+') +
     (Math.abs(hours) < 10 ? '0' : '') +
     Math.abs(hours) +
@@ -57,7 +57,7 @@ function getWindDirectionContext(direction) {
 
 // Converts km to m, to at most one decimal place
 function metresToKilometres(valueInMetres) {
-  var valueInKilometres = valueInMetres / 1000;
+  const valueInKilometres = valueInMetres / 1000;
 
   if (Number.isInteger(valueInKilometres)) {
     return valueInKilometres;
@@ -76,8 +76,8 @@ function capitaliseFirstCharacter(string) {
 
 // Converts 'new york county,us' into 'New York County, US'
 function formatRecentSearchText(cityAndCode) {
-  var parts = cityAndCode.split(',');
-  var capitalisedCity = parts[0]
+  const parts = cityAndCode.split(',');
+  const capitalisedCity = parts[0]
     .split(' ')
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(' ');
@@ -88,82 +88,88 @@ function formatRecentSearchText(cityAndCode) {
 // Sets the height of every temperature element in forecast breakdown
 // relative to its parent div, based on the min and max temp for that day
 function setTempHeight() {
-  // For each day tab, get the id, max and min
-  $('.day-tab').each(function () {
-    var id = $(this).attr('id').split('-')[1];
+  // Loop through every day tab
+  document.querySelectorAll('.day-tab').forEach((dayTab) => {
+    // Get the day of the month
+    const dayOfMonth = dayTab.id.split('-')[1];
 
-    // Convert max/min to number, making sure to pick up - sign and digits only
-    var max = $(this).find('.max').text();
-    max = Number(max.match(/-?\d+/)[0]);
-    var min = $(this).find('.min').text();
-    min = Number(min.match(/-?\d+/)[0]);
+    // Get the max and min temperature
+    const max = Number(
+      dayTab.querySelector('.max').textContent.match(/-?\d+/)[0]
+    );
+    const min = Number(
+      dayTab.querySelector('.min').textContent.match(/-?\d+/)[0]
+    );
 
-    // console.log(`id: ${id}, max: ${max}, min: ${min}`);
+    // For this day, find the breakdown to target
+    const breakdownElToTarget = document.getElementById(
+      `breakdown-${dayOfMonth}`
+    );
+    // As last hour is descriptive, need logic to help break from last iteration
+    const maxLoops =
+      breakdownElToTarget.querySelectorAll('.hour').length - 1;
 
-    // Use the id to find the breakdown element to target
-    var breakdownToTarget = $(`#breakdown-${id}`);
-    // As last hour element is descriptive text, need a way to exit upcoming loop on last iteration
-    var maxLoops = breakdownToTarget.find('.hour').length - 1;
+    // Loop through every 'hour' element in breakdown
+    breakdownElToTarget
+      .querySelectorAll('.hour')
+      .forEach((hourEl, index) => {
+        if (index === maxLoops) {
+          return;
+        }
 
-    // For each hour, set the height
-    breakdownToTarget.find('.hour').each(function (index) {
-      if (index === maxLoops) {
-        return;
-      }
+        // Target the temp paragraph
+        const paraToTarget = hourEl.querySelector('.temp p');
+        const temp = Number(
+          paraToTarget.textContent.match(/-?\d+/)[0]
+        );
 
-      // Target the temp paragraph
-      var paraToTarget = $(this).find('.temp p');
-      var temp = paraToTarget.text();
-      temp = Number(temp.match(/-?\d+/)[0]);
+        let percentage;
+        if (max === min) {
+          percentage = 50;
+        } else {
+          percentage = Math.round(((temp - min) / (max - min)) * 100);
+        }
 
-      var percentage;
-      if (max === min) {
-        percentage = 50;
-      } else {
-        percentage = Math.round(((temp - min) / (max - min)) * 100);
-      }
+        // As I want the height to be between 25% and 75% from the bottom
+        // of the parent div, this logic helps achieve this
+        const heightPercentage = percentage / 2 + 25;
 
-      // As I want the height to be between 25% and 75% from the bottom
-      // of the parent div, this logic helps achieve this
-      var height = percentage / 2;
-      height += 25;
+        // console.log(
+        //   `temp: ${temp}, percentage: ${percentage}, height: ${height}`
+        // );
 
-      // console.log(
-      //   `temp: ${temp}, percentage: ${percentage}, height: ${height}`
-      // );
-
-      // Now update the css for this p element
-      paraToTarget.css('bottom', `${height}%`);
-    });
+        paraToTarget.style.bottom = `${heightPercentage}%`;
+      });
   });
 }
 
 // Clears forecast HTML and provides feedback when user
 // puts in a search term that the API doesn't recognise
 function noResultsFound() {
-  weatherEl.html('');
-  var feedbackEl = $('<div>');
-  feedbackEl.addClass('feedback');
-  feedbackEl.text('No results found. Please try again!');
-  weatherEl.append(feedbackEl);
-  // $('.search').select(); // not mobile-friendly
+  weatherEl.innerHTML = '';
+
+  const feedbackEl = document.createElement('div');
+  feedbackEl.classList.add('feedback');
+  feedbackEl.textContent = 'No results found. Please try again!';
+  weatherEl.appendChild(feedbackEl);
+  // document.querySelector('.search').select(); // not mobile-friendly
 }
 
 // Inject the current weather section using the first forecast object
 function showCurrentWeather(weatherObj) {
-  var sunrise = moment
+  const sunrise = moment
     .unix(weatherObj.sunrise)
     .utcOffset(weatherObj.timezone / 60)
     .format('HH:mm');
-  var sunset = moment
+  const sunset = moment
     .unix(weatherObj.sunset)
     .utcOffset(weatherObj.timezone / 60)
     .format('HH:mm');
 
-  var currentEl = $('<section>');
-  currentEl.addClass('current');
+  const currentEl = document.createElement('section');
+  currentEl.classList.add('current');
 
-  currentEl.append(`
+  currentEl.innerHTML = `
   <div class="overview column">
     <h1>Now</h1>
     <p class="temp">${Math.round(weatherObj.temp)}°C</p>
@@ -210,50 +216,49 @@ function showCurrentWeather(weatherObj) {
   </table>
 
   <div id="map" style="width:300px; height:200px;" class="map"></div>
-  `);
+  `;
   // <tr>
   //   <td><strong>Pressure</strong></td>
   //   <td>${Math.round(weatherObj.pressure)} hPa</td>
   // </tr>
 
-  weatherEl.append(currentEl);
+  weatherEl.appendChild(currentEl);
 
   // Work out the UTC offset, in minutes, of the forecast timestamp
-  var timestamp = moment.unix(weatherObj.timestamp);
-  var timezoneOffset = timestamp
+  const timestamp = moment.unix(weatherObj.timestamp);
+  const timezoneOffset = timestamp
     .utcOffset(weatherObj.timezone / 60)
     .utcOffset();
 
-  // clear previous timer, if applicable
-  clearTimeout(timer);
+  clearInterval(intervalId);
 
-  // Immediately do one iteration before entering timer where we use the offset
-  // to rejig the current time when we call moment()
-  var currentTime = moment().utcOffset(timezoneOffset);
-  var timeString = currentTime.format('D MMM YYYY, HH:mm:ss');
-  $('#clock').text(timeString);
+  // Handles showing the formatted time in clock element
+  function updateClock() {
+    const currentTime = moment().utcOffset(timezoneOffset);
+    const timeString = currentTime.format('D MMM YYYY, HH:mm:ss');
+    const clockEl = document.getElementById('clock');
+    if (clockEl) {
+      clockEl.textContent = timeString;
+    }
+  }
 
-  // Start the timer
-  timer = setInterval(function () {
-    currentTime = moment().utcOffset(timezoneOffset);
-    timeString = currentTime.format('D MMM YYYY, HH:mm:ss');
-    $('#clock').text(timeString);
-  }, 1000);
+  updateClock(); // Run immediately once
 
-  var lat = weatherObj.lat;
-  var lon = weatherObj.lon;
+  // Start the timer, which runs updateClock every second
+  intervalId = setInterval(updateClock, 1000);
 
   // Creating map options
-  var mapOptions = {
+  const { lat, lon } = weatherObj;
+  const mapOptions = {
     center: [lat, lon],
     zoom: 6,
   };
 
   // Creating a map object
-  var map = new L.map('map', mapOptions);
+  const map = new L.map('map', mapOptions);
 
   // Creating a Layer object
-  var layer = new L.TileLayer(
+  const layer = new L.TileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
       maxZoom: 15,
@@ -266,27 +271,32 @@ function showCurrentWeather(weatherObj) {
   // Adding layer to the map
   map.addLayer(layer);
 
-  var marker = new L.marker([lat, lon]);
+  const marker = new L.marker([lat, lon]);
   marker.addTo(map);
 }
 
 // Update recentSearches array with successful search, and use it to update local storage
 function updateRecentSearches(newSuccessfulSearch, countryCode) {
-  var combinedSearch =
-    newSuccessfulSearch.toLowerCase() + ',' + countryCode.toLowerCase();
-  // Check to see if search already exists
-  var index = recentSearches.indexOf(`${combinedSearch}`);
-  if (index !== -1) {
-    // If it does, remove it from recent searches
-    recentSearches.splice(index, 1);
+  const searchKey = `${newSuccessfulSearch.toLowerCase()},${countryCode.toLowerCase()}`;
+
+  // Check to see if search already exists - if it does, remove it from recent searches
+  const searchExists = recentSearches.includes(searchKey);
+
+  if (searchExists) {
+    recentSearches = recentSearches.filter(
+      (search) => search != searchKey
+    );
   }
+  // const index = recentSearches.indexOf(searchKey);
+  // if (index !== -1) {
+  //   recentSearches.splice(index, 1);
+  // }
 
-  // Add this new search to beginning of list
-  recentSearches.unshift(combinedSearch);
+  // Add this new search to the beginning of list
+  recentSearches.unshift(searchKey);
 
-  // Check if the length isn't over the max allowed
+  // If length of recent searches exceeds max, remove 'oldest' search
   if (recentSearches.length > MAX_NUM_OF_RECENTS) {
-    // If it is, remove the 'oldest' search
     recentSearches.pop();
   }
 
@@ -300,98 +310,84 @@ function updateRecentSearches(newSuccessfulSearch, countryCode) {
   renderRecentSearches();
 }
 
-// Uses local storage to render recent searches
-function renderRecentSearches() {
-  searchHistoryEl.html('');
-
-  recentSearches = JSON.parse(localStorage.getItem('weather_search_history'));
-  if (recentSearches === null) {
-    recentSearches = [];
+// Handles the switching of days in the forecast
+function switchDayInForecast(tabElement) {
+  if (tabElement.classList.contains('selected')) {
     return;
   }
 
-  searchHistoryEl.append(
-    `<p class="recent-search-header">
-      <span id="collapse-down-arrow">
-        <i class="fas fa-chevron-down"></i>
-      </span>
-      <span id="collapse-up-arrow">
-        <i class="fas fa-chevron-up"></i>
-      </span>&nbsp; Recent Searches
-    </p>`
+  // get the day of month from the tab id
+  const dayOfMonth = tabElement.id.split('-')[1];
+
+  // globally remove the 'selected' class from every tab and hide every description
+  document.querySelectorAll('.day-tab').forEach((tab) => {
+    tab.classList.remove('selected');
+    tab.querySelector('.tab-description').classList.add('hide');
+  });
+
+  // expand the appropriate tab and 'unhide' its description
+  tabElement.classList.add('selected');
+  tabElement
+    .querySelector('.tab-description')
+    .classList.remove('hide');
+
+  // globally hide all breakdowns
+  document
+    .querySelectorAll('.day-breakdown')
+    .forEach((dayBreakdown) => {
+      dayBreakdown.classList.add('hide');
+    });
+  // show the breakdown corresponding to the day of month
+  const breakdownToDisplay = document.getElementById(
+    `breakdown-${dayOfMonth}`
   );
-
-  // Iterate through stored searches, adding a button for each one
-  for (var cityAndCode of recentSearches) {
-    searchHistoryEl.append(`
-    <button value="${cityAndCode}" class="history-button">
-      <span class="button-text">${formatRecentSearchText(cityAndCode)}</span>
-      <span class="close">x</span>
-    </button>
-    `);
+  if (breakdownToDisplay) {
+    breakdownToDisplay.classList.remove('hide');
   }
-}
-
-// Switches between different days in the forecast
-function switchDayInForecast(element) {
-  var tab = $(element);
-  // Get the id, and grab the element that needs to be changed
-  var id = tab.attr('id').split('-')[1];
-  var tabToChange = $(`#tab-${id}`);
-
-  // globally remove the selected class to every tab and hide every description
-  element.parent().children().removeClass('selected');
-  element.parent().children().children('.tab-description').addClass('hide');
-
-  // 'expand' the appropriate tab and shows its description
-  tabToChange.addClass('selected');
-  tabToChange.children('.tab-description').removeClass('hide');
-
-  // globally hide all breakdowns before unhiding the appropriate one
-  var forecastEl = $('.forecast');
-  forecastEl.children('.day-breakdown').addClass('hide');
-  forecastEl.children(`#breakdown-${id}`).removeClass('hide');
 }
 
 // Handles the bulk of the logic for showing the weather, given an object containing weather details
 function showWeather(weatherDetails) {
   // Clear the old html
-  weatherEl.html('');
+  weatherEl.innerHTML = '';
 
-  // Add city name to h2 element
-  weatherEl.append(
-    `<h2 class="city-name">Weather conditions for <span class="location">${
-      weatherDetails.name + ', ' + weatherDetails.countryCode
-    }</span></h2>`
-  );
+  const headerEl = document.createElement('h2');
+  headerEl.classList.add('city-name');
+  headerEl.innerHTML = `
+    Weather conditions for <span class="location">${weatherDetails.name}, ${weatherDetails.countryCode}</span>
+  `;
+
+  weatherEl.appendChild(headerEl);
 
   showCurrentWeather(weatherDetails.forecasts[0]);
 
   // Generate an array, days, that includes all days to be covered in forecast (e.g. 28, 29, 30, 31, 1, 2)
   // the ... is a spread operator used to convert the set object into an array
-  days = [
-    ...new Set(weatherDetails.forecasts.map((forecast) => forecast.dayMonth)),
+  const days = [
+    ...new Set(
+      weatherDetails.forecasts.map((forecast) => forecast.dayMonth)
+    ),
   ];
 
-  var forecastEl = $('<section>');
-  forecastEl.addClass('forecast column');
-  forecastEl.append(
-    `<h1 id="forecast-header">${days.length} Day Forecast</h1>`
-  );
-  weatherEl.append(forecastEl);
+  const forecastEl = document.createElement('section');
+  forecastEl.classList.add('forecast', 'column');
+  forecastEl.innerHTML = `
+    <h1 id="forecast-header">${days.length} Day Forecast</h1>
+  `;
+  weatherEl.appendChild(forecastEl);
 
   // this is a pointer variable needed for css stuff
-  var start = days[0];
+  let start = days[0];
 
   // Create the days element that will hold all tabs and append it to forecast element
-  var tabsEl = $('<div>');
-  tabsEl.addClass('row days');
-  forecastEl.append(tabsEl);
+  const tabsEl = document.createElement('div');
+  tabsEl.classList.add('row', 'days');
+  forecastEl.appendChild(tabsEl);
 
   // For every day in days, do stuff
   for (let i = 0; i < days.length; i++) {
     // Filter weatherDetails to include forecasts for this day
-    var thisDaysForecasts = weatherDetails.forecasts.filter(
+    const thisDaysForecasts = weatherDetails.forecasts.filter(
       (forecast) => forecast.dayMonth === days[i]
     );
 
@@ -403,7 +399,9 @@ function showWeather(weatherDetails) {
         start = days[1];
 
         // also need to correct the number of days in the forecast header
-        $('#forecast-header').text(`${days.length - 1} Day Forecast`);
+        document.querySelector('#forecast-header').textContent = `${
+          days.length - 1
+        } Day Forecast`;
         continue;
       }
       // If length is 9, which can happen with some timezones, then just take
@@ -413,14 +411,14 @@ function showWeather(weatherDetails) {
       }
     }
 
-    var thisDaysMoment = moment
+    const thisDaysMoment = moment
       .unix(thisDaysForecasts[0].timestamp)
       .utcOffset(weatherDetails.timezone / 60);
 
-    // var thisDaysMoment = moment(thisDaysForecasts[0].unix, 'X');
+    // const thisDaysMoment = moment(thisDaysForecasts[0].unix, 'X');
 
     // Start to build an object for this day, starting with date stuff
-    var thisDay = {
+    const thisDay = {
       dateDay: Number(thisDaysMoment.format('D')),
       dateShort: thisDaysMoment.format('ddd D'),
       dateLong: thisDaysMoment.format('dddd D MMMM'),
@@ -498,22 +496,24 @@ function showWeather(weatherDetails) {
     thisDay.iconurl = `${iconBaseURL + thisDay.icon}.png`;
 
     // Initialise tracking variables to help get the highest and lowest temps
-    var highestTemp = -99;
-    var lowestTemp = 99;
+    let highestTemp = -99;
+    let lowestTemp = 99;
 
     // Create a breakdown element (a wrapper) for this day
-    var breakdownEl = $('<div>');
-    breakdownEl.addClass('day-breakdown column hide');
-    breakdownEl.attr('id', `breakdown-${thisDay.dateDay}`);
-    // add thisDay's date
-    breakdownEl.append(`
-      <h3 class="day-date">${thisDay.dateLong}</h3>
-    `);
+    const breakdownEl = document.createElement('div');
+    breakdownEl.classList.add('day-breakdown', 'column', 'hide');
+    breakdownEl.id = `breakdown-${thisDay.dateDay}`;
 
-    // Create a day element inside of the wrapper
-    var dayEl = $('<div>');
-    dayEl.addClass('day row');
-    breakdownEl.append(dayEl);
+    // Create a header element and add it to the breakdown element
+    const dayHeaderEl = document.createElement('h3');
+    dayHeaderEl.classList.add('day-date');
+    dayHeaderEl.textContent = thisDay.dateLong;
+    breakdownEl.appendChild(dayHeaderEl);
+
+    // Create an empty day element and add it to this breakdown
+    const dayEl = document.createElement('div');
+    dayEl.classList.add('day', 'row');
+    breakdownEl.appendChild(dayEl);
 
     // Iterate through each forecast for this day
     for (let i = 0; i < thisDaysForecasts.length; i++) {
@@ -526,10 +526,14 @@ function showWeather(weatherDetails) {
       }
 
       // Build a string to help get the icon
-      var iconurl = `${iconBaseURL + thisDaysForecasts[i].icon}.png`;
+      const iconurl = `${
+        iconBaseURL + thisDaysForecasts[i].icon
+      }.png`;
 
       // Inject a time block element inside of the day element
-      dayEl.append(`
+      dayEl.insertAdjacentHTML(
+        'beforeend',
+        `
         <div class="hour column">
           <p>${thisDaysForecasts[i].hour}</p>
           <div class="img-wrap">
@@ -543,7 +547,9 @@ function showWeather(weatherDetails) {
             />
           </div>
           <div class="temp">
-            <p><strong>${Math.round(thisDaysForecasts[i].temp)}°</strong></p>
+            <p><strong>${Math.round(
+              thisDaysForecasts[i].temp
+            )}°</strong></p>
           </div>
           <div class="wind-wrap">
             <p>${Math.round(thisDaysForecasts[i].windSpeed)}</p>
@@ -553,10 +559,14 @@ function showWeather(weatherDetails) {
               style="
                 transform:
                   translate(-50%,-50%)
-                  rotate(${thisDaysForecasts[i].windDirection + 180}deg);
+                  rotate(${
+                    thisDaysForecasts[i].windDirection + 180
+                  }deg);
                 -webkit-transform:
                   translate(-50%,-50%)
-                  rotate(${thisDaysForecasts[i].windDirection + 180}deg)"
+                  rotate(${
+                    thisDaysForecasts[i].windDirection + 180
+                  }deg)"
               title="wind blowing from ${
                 thisDaysForecasts[i].windDirection
               } degrees true north"
@@ -564,7 +574,8 @@ function showWeather(weatherDetails) {
           </div>
           <p>${thisDaysForecasts[i].humidity}%</p>
         </div>
-      `);
+      `
+      );
     }
 
     // I replaced the code below with the wind-wrap block in the code above
@@ -580,9 +591,11 @@ function showWeather(weatherDetails) {
     // </p>;
 
     // If I go back to previous, then easy solution is to change below to ''
-    var windWrapIconStyleForDetailColumn = 'style="height: 40px"';
+    const windWrapIconStyleForDetailColumn = 'style="height: 40px"';
     // Add another element to the day that describes what each bit of info is
-    dayEl.append(`
+    dayEl.insertAdjacentHTML(
+      'beforeend',
+      `
       <div class="hour column hour-details">
         <p><small>(UTC${secondsToReadableTimeShift(
           weatherDetails.timezone
@@ -593,11 +606,14 @@ function showWeather(weatherDetails) {
         <div ${windWrapIconStyleForDetailColumn} class="column justify-center"><p><small>Wind (mph)</small></p></div>
         <p><small>Humidity</small></p>
       </div>
-    `);
+    `
+    );
 
     // Now that we have the highest and lowest temperature for this day,
     // use this and other details collected so far to inject a tab for this day
-    tabsEl.append(`
+    tabsEl.insertAdjacentHTML(
+      'beforeend',
+      `
       <div class="day-tab column" id="tab-${thisDay.dateDay}">
         <p class="f-1">${thisDay.dateShort}</p>
         <div class="tab-details row align-center">
@@ -611,18 +627,24 @@ function showWeather(weatherDetails) {
           </div>
           <div class="column text-center f-1">
             <p class="max">${Math.round(highestTemp)}°</p>
-            <p class="min"><small>${Math.round(lowestTemp)}°</small></p>
+            <p class="min"><small>${Math.round(
+              lowestTemp
+            )}°</small></p>
           </div>
         </div>
         <p class="tab-description f-1 hide">${thisDay.description}</p>
       </div>
-    `);
+    `
+    );
 
     // Last thing to do for this day is add the wrapper breakdown element to the forecast element
-    forecastEl.append(breakdownEl);
+    forecastEl.appendChild(breakdownEl);
   }
 
-  forecastEl.append(`
+  // Add attribution
+  forecastEl.insertAdjacentHTML(
+    'beforeend',
+    `
   <div class="attribution row justify-center align-center">
     <p>Weather data provided by </p>
     <a 
@@ -635,17 +657,21 @@ function showWeather(weatherDetails) {
         alt="OpenWeather logo"
         title="OpenWeather">
     </a>
-    
-    
   </div>
-  `);
+  `
+  );
 
   // Show the breakdown for the first day
-  $(`#breakdown-${start}`).removeClass('hide');
+  document
+    .querySelector(`#breakdown-${start}`)
+    .classList.remove('hide');
 
-  // Expand the tab and show the description for this first day
-  $(`#tab-${start}`).addClass('selected');
-  $(`#tab-${start}`).children('.tab-description').removeClass('hide');
+  // Expand the tab and description for the first day
+  const firstTabEl = document.querySelector(`#tab-${start}`);
+  firstTabEl.classList.add('selected');
+  firstTabEl
+    .querySelector('.tab-description')
+    .classList.remove('hide');
 
   // Highlights the text selection in the search bar
   // $('.search').select();
@@ -655,14 +681,19 @@ function showWeather(weatherDetails) {
   setTempHeight();
 }
 
-// Function that handles the API calls, filters the data into an object that can be used to show the weather
-function doWeatherForecast(searchString) {
-  // Initialise an object that we'll use to build weather info for all days
-  var weatherDetails = {};
+// Function that handles the API calls and filters/transforms the data
+// into an object that can be used to show the weather
+async function doWeatherForecast(searchString) {
+  try {
+    // Initialise an object that we'll use to build weather info for all days
+    const weatherDetails = {};
 
-  // Do the API stuff
-  // Geocoder API request
-  $.get(`${geocoderBaseURL + searchString}`).then(function (geocoderResult) {
+    // Geocoder API request
+    const geocoderResponse = await fetch(
+      `${geocoderBaseURL + searchString}`
+    );
+    const geocoderResult = await geocoderResponse.json();
+
     // If the geocoder returned nothing, then deal appropriately with that
     if (geocoderResult.length === 0) {
       noResultsFound();
@@ -670,86 +701,149 @@ function doWeatherForecast(searchString) {
     }
 
     // Build up the info about this city
-    weatherDetails.lat = geocoderResult[0].lat;
-    weatherDetails.lon = geocoderResult[0].lon;
-    weatherDetails.name = geocoderResult[0].name;
-    weatherDetails.countryCode = geocoderResult[0].country;
+    const geocoderItem = geocoderResult[0];
+    weatherDetails.lat = geocoderItem.lat;
+    weatherDetails.lon = geocoderItem.lon;
+    weatherDetails.name = geocoderItem.name;
+    weatherDetails.countryCode = geocoderItem.country;
 
-    var urlBase = 'https://api.openweathermap.org/data/2.5/';
-    var urlParams = `lat=${weatherDetails.lat}&lon=${weatherDetails.lon}&appid=${apiKey}&units=metric`;
+    const urlBase = 'https://api.openweathermap.org/data/2.5/';
+    const urlParams = `lat=${weatherDetails.lat}&lon=${weatherDetails.lon}&appid=${apiKey}&units=metric`;
 
     // Current weather API request
-    $.get(`${urlBase}weather?${urlParams}`).then(function (weatherNow) {
-      // Pick up the timezone as it's needed for adjusting time block info for different locations
-      weatherDetails.timezone = weatherNow.timezone;
+    const weatherNowResponse = await fetch(
+      `${urlBase}weather?${urlParams}`
+    );
+    const weatherNow = await weatherNowResponse.json();
 
-      // Add a temporary object that holds the weather data for right now
-      weatherDetails.now = {
-        timestamp: weatherNow.dt,
-        dayMonth: Number(
-          moment
-            .unix(weatherNow.dt)
-            .utcOffset(weatherDetails.timezone / 60)
-            .format('D')
-        ),
-        hour: moment
+    // Pick up the timezone as it's needed for adjusting time block info for different locations
+    weatherDetails.timezone = weatherNow.timezone;
+
+    // Add a temporary object that holds the weather data for right now
+    weatherDetails.now = {
+      timestamp: weatherNow.dt,
+      dayMonth: Number(
+        moment
           .unix(weatherNow.dt)
           .utcOffset(weatherDetails.timezone / 60)
-          .format('HH:mm'),
-        temp: weatherNow.main.temp,
-        humidity: weatherNow.main.humidity,
-        description: weatherNow.weather[0].description,
-        icon: weatherNow.weather[0].icon,
-        windSpeed: convertMetersPerSecondToMilesPerHour(weatherNow.wind.speed),
-        windDirection: weatherNow.wind.deg,
-        // extra stuff below
-        feelsLike: weatherNow.main.feels_like,
-        pressure: weatherNow.main.pressure,
-        sunrise: weatherNow.sys.sunrise,
-        sunset: weatherNow.sys.sunset,
-        visibility: weatherNow.visibility,
-        lat: weatherNow.coord.lat,
-        lon: weatherNow.coord.lon,
-        timezone: weatherDetails.timezone, // need this for calculating current time for first object
-      };
+          .format('D')
+      ),
+      hour: moment
+        .unix(weatherNow.dt)
+        .utcOffset(weatherDetails.timezone / 60)
+        .format('HH:mm'),
+      temp: weatherNow.main.temp,
+      humidity: weatherNow.main.humidity,
+      description: weatherNow.weather[0].description,
+      icon: weatherNow.weather[0].icon,
+      windSpeed: convertMetersPerSecondToMilesPerHour(
+        weatherNow.wind.speed
+      ),
+      windDirection: weatherNow.wind.deg,
+      // extra stuff below
+      feelsLike: weatherNow.main.feels_like,
+      pressure: weatherNow.main.pressure,
+      sunrise: weatherNow.sys.sunrise,
+      sunset: weatherNow.sys.sunset,
+      visibility: weatherNow.visibility,
+      lat: weatherNow.coord.lat,
+      lon: weatherNow.coord.lon,
+      timezone: weatherDetails.timezone, // need this for calculating the current time for the first object
+    };
 
-      // 5-day forecast API request
-      $.get(`${urlBase}forecast?${urlParams}`).then(function (forecast) {
-        // Filter the data from the API to only include details interested in
-        weatherDetails.forecasts = forecast.list.map((aForecast) => ({
-          timestamp: aForecast.dt,
-          dayMonth: Number(
-            moment
-              .unix(aForecast.dt)
-              .utcOffset(weatherDetails.timezone / 60)
-              .format('D')
-          ),
-          hour: moment
-            .unix(aForecast.dt)
-            .utcOffset(weatherDetails.timezone / 60)
-            .format('HH:mm'),
-          temp: aForecast.main.temp,
-          humidity: aForecast.main.humidity,
-          description: aForecast.weather[0].description,
-          icon: aForecast.weather[0].icon,
-          windSpeed: convertMetersPerSecondToMilesPerHour(aForecast.wind.speed),
-          windDirection: aForecast.wind.deg,
-        }));
+    // 5-day forecast API request
+    const forecastResponse = await fetch(
+      `${urlBase}forecast?${urlParams}`
+    );
+    const forecast = await forecastResponse.json();
 
-        // Now put the forecast about right now into the beginning of the forecast array
-        weatherDetails.forecasts.unshift(weatherDetails.now);
-        delete weatherDetails.now;
+    // Filter the data from the API to only include details interested in
+    weatherDetails.forecasts = forecast.list.map((aForecast) => ({
+      timestamp: aForecast.dt,
+      dayMonth: Number(
+        moment
+          .unix(aForecast.dt)
+          .utcOffset(weatherDetails.timezone / 60)
+          .format('D')
+      ),
+      hour: moment
+        .unix(aForecast.dt)
+        .utcOffset(weatherDetails.timezone / 60)
+        .format('HH:mm'),
+      temp: aForecast.main.temp,
+      humidity: aForecast.main.humidity,
+      description: aForecast.weather[0].description,
+      icon: aForecast.weather[0].icon,
+      windSpeed: convertMetersPerSecondToMilesPerHour(
+        aForecast.wind.speed
+      ),
+      windDirection: aForecast.wind.deg,
+    }));
 
-        // Now that we've collected and arranged the data, use it to show the data
-        showWeather(weatherDetails);
+    // Now put the forecast about right now into the beginning of the forecast array
+    weatherDetails.forecasts.unshift(weatherDetails.now);
+    delete weatherDetails.now;
 
-        // Update recent searches column
-        updateRecentSearches(weatherDetails.name, weatherDetails.countryCode);
+    // Now that we've collected and arranged the data, use it to show the data
+    showWeather(weatherDetails);
 
-        $('#search-text').autocomplete('close');
-      });
-    });
+    // Update recent searches column
+    updateRecentSearches(
+      weatherDetails.name,
+      weatherDetails.countryCode
+    );
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+  }
+}
+
+// Uses local storage to render recent searches
+function renderRecentSearches() {
+  searchHistoryEl.innerHTML = '';
+
+  recentSearches =
+    JSON.parse(localStorage.getItem('weather_search_history')) || [];
+  // if (recentSearches === null) {
+  //   recentSearches = [];
+  //   return;
+  // }
+
+  searchHistoryEl.insertAdjacentHTML(
+    'beforeend',
+    `
+    <p class="recent-search-header">
+      <span id="collapse-down-arrow">
+        <i class="fas fa-chevron-down"></i>
+      </span>
+      <span id="collapse-up-arrow">
+        <i class="fas fa-chevron-up"></i>
+      </span>&nbsp; Recent Searches
+    </p>
+  `
+  );
+
+  // Iterate through stored searches, adding a button for each one
+  recentSearches.forEach((cityAndCode) => {
+    searchHistoryEl.insertAdjacentHTML(
+      'beforeend',
+      `
+      <button value="${cityAndCode}" class="history-button">
+        <span class="button-text">${formatRecentSearchText(
+          cityAndCode
+        )}</span>
+        <span class="close">x</span>
+      </button>
+    `
+    );
   });
+  // for (const cityAndCode of recentSearches) {
+  //   searchHistoryEl.append(`
+  //   <button value="${cityAndCode}" class="history-button">
+  //     <span class="button-text">${formatRecentSearchText(cityAndCode)}</span>
+  //     <span class="close">x</span>
+  //   </button>
+  //   `);
+  // }
 }
 
 // Load page
@@ -758,17 +852,22 @@ function init() {
   renderRecentSearches();
 
   // Form submit event listener
-  formEl.submit(function (event) {
+  formEl.addEventListener('submit', function (event) {
     event.preventDefault();
-    var searchString = $('#search-text').val().trim();
-    var countryCode = $('input[name="country"]:checked').val();
+    const searchString = document
+      .querySelector('#search-text')
+      .value.trim();
+    const countryCode = document.querySelector(
+      'input[name="country"]:checked'
+    ).value;
 
     // If there's no text in search input, do nothing
     if (searchString === '') {
       return;
     }
 
-    // If there is a specified country code (i.e. 'gb') then add it to string to use with API
+    // If there is a specified country code (i.e. 'gb')
+    // then add it to string to use with API
     if (countryCode !== '') {
       searchString += ',' + countryCode;
     }
@@ -777,53 +876,68 @@ function init() {
   });
 
   // Day tab click event listener
-  weatherEl.on('click', '.day-tab', function () {
-    switchDayInForecast($(this));
+  weatherEl.addEventListener('click', function (event) {
+    const dayTab = event.target.closest('.day-tab');
+    if (dayTab) {
+      switchDayInForecast(dayTab);
+    }
   });
 
   // Recent search click event listener
-  searchHistoryEl.on('click', 'button', function () {
-    var searchString = $(this).val();
-    doWeatherForecast(searchString);
+  searchHistoryEl.addEventListener('click', function (event) {
+    // check to see if we've clicked on a close span
+    if (event.target.classList.contains('close')) {
+      const cityToRemove = event.target.parentNode.value;
+      const pastSearchExists = recentSearches.includes(cityToRemove);
 
-    // Update the text in the search bar to reflect the search history item
-    $('.search').val(`${searchString.split(',')[0]}`);
-    // $('.search').select(); // not mobile-friendly
-  });
-
-  // Removing recent search event listener
-  searchHistoryEl.on('click', '.close', function (event) {
-    // Stop the other event in the button from happening
-    event.stopPropagation();
-
-    // Get the value of the button and use if to remove it from recentSearches array
-    var cityToRemove = $(this).parent().val();
-    var index = recentSearches.indexOf(cityToRemove);
-    if (index !== -1) {
-      recentSearches.splice(index, 1);
-
-      // If recentSearches array is now empty, remove it from local storage and clear page
-      if (recentSearches.length === 0) {
-        localStorage.removeItem('weather_search_history');
-        weatherEl.html('');
-        weatherEl.append(`
-          <div class="feedback">
-            <p>Use the search bar to get started.</p>
-          </div>
-        `);
-        searchHistoryEl.html('');
-        $('.search').val('');
-        $('.search').select();
-        // Otherwise just update local storage to reflect changes made
-      } else {
-        localStorage.setItem(
-          'weather_search_history',
-          JSON.stringify(recentSearches)
+      if (pastSearchExists) {
+        // remove search from history
+        recentSearches = recentSearches.filter(
+          (pastSearch) => pastSearch !== cityToRemove
         );
+
+        if (recentSearches.length === 0) {
+          clearInterval(intervalId);
+          localStorage.removeItem('weather_search_history');
+          weatherEl.innerHTML = '';
+          weatherEl.insertAdjacentHTML(
+            'beforeend',
+            `
+            <div class="feedback">
+              <p>Use the search bar to get started.</p>
+            </div>
+          `
+          );
+          searchHistoryEl.innerHTML = '';
+          document.querySelector('.search').value = '';
+          // document.querySelector('.search').select();
+        } else {
+          localStorage.setItem(
+            'weather_search_history',
+            JSON.stringify(recentSearches)
+          );
+        }
+
+        // Use the updated local storage to re-render the search history column
+        renderRecentSearches();
       }
+      return;
     }
-    // Use the updated local storage to re-render the search history column
-    renderRecentSearches();
+
+    //  now that we've eliminated the possibility of the close span
+    // being clicked, check if a history button has been clicked
+    const searchHistoryButton =
+      event.target.closest('.history-button');
+
+    if (searchHistoryButton) {
+      const searchString = searchHistoryButton.value;
+      doWeatherForecast(searchString);
+
+      // Update the text in the search bar to reflect the search history item
+      document.querySelector('.search').value =
+        searchString.split(',')[0];
+      // document.querySelector('.search').select(); // not mobile-friendly
+    }
   });
 }
 
@@ -866,8 +980,8 @@ init();
     A final thing: if the user ignores the autocomplete list and presses enter,
     then to clear the autocomplete list there needs to a specific event listener for that.
 */
-var geoapifyApiKey = '9634b8d64110479ebf267e2b2dae0528';
-var searchTextInput = $('#search-text');
+const geoapifyApiKey = '9634b8d64110479ebf267e2b2dae0528';
+const searchTextInput = $('#search-text');
 
 function addAutocompleteFeature() {
   searchTextInput.autocomplete({
@@ -882,7 +996,7 @@ function addAutocompleteFeature() {
         },
         success: function (result) {
           // create an array of objects with label and value properties from the API response
-          var results = result.features.map(function (feature) {
+          const results = result.features.map(function (feature) {
             return {
               label: `${feature.properties.city}, ${feature.properties.country}`,
               value: `${feature.properties.city},${feature.properties.country_code}`,
@@ -891,7 +1005,7 @@ function addAutocompleteFeature() {
           // console.log(results);
 
           // some rejigging to only include valid city results
-          var filteredResults = results.filter(function (result) {
+          const filteredResults = results.filter(function (result) {
             return (
               !result.label.includes('undefined') &&
               !result.value.includes('undefined')
@@ -901,7 +1015,10 @@ function addAutocompleteFeature() {
           // console.log(filteredResults);
 
           // drop duplicates
-          var uniqueResults = filteredResults.filter(function (result, index) {
+          const uniqueResults = filteredResults.filter(function (
+            result,
+            index
+          ) {
             return (
               filteredResults.findIndex(function (otherResult) {
                 return otherResult.label === result.label;
@@ -911,7 +1028,7 @@ function addAutocompleteFeature() {
 
           // last bit of formatting to capitalize the country code
           uniqueResults.forEach((obj) => {
-            var [city, code] = obj.value.split(',');
+            const [city, code] = obj.value.split(',');
             obj.value = `${city},${code.toUpperCase()}`;
           });
 
@@ -951,9 +1068,20 @@ addAutocompleteFeature();
 */
 
 function addMobileFriendlyFeatures() {
-  searchHistoryEl.on('click', '.recent-search-header', function () {
-    $(this).siblings().toggleClass('expanded');
-    $(this).children().toggleClass('expanded');
+  searchHistoryEl.addEventListener('click', function (event) {
+    if (event.target.classList.contains('recent-search-header')) {
+      document
+        .querySelector('#collapse-down-arrow')
+        .classList.toggle('expanded');
+      document
+        .querySelector('#collapse-up-arrow')
+        .classList.toggle('expanded');
+    }
+    searchHistoryEl
+      .querySelectorAll('.history-button')
+      .forEach((buttonEl) => {
+        buttonEl.classList.toggle('expanded');
+      });
   });
 }
 
@@ -967,16 +1095,19 @@ addMobileFriendlyFeatures();
 */
 
 function addToolTipFeature() {
-  weatherEl.on('mouseenter', '.img-wrap', function () {
+  const jQueryWeatherEl = $('.weather');
+  jQueryWeatherEl.on('mouseenter', '.img-wrap', function () {
     // grab the alt text
-    var altText = capitaliseFirstCharacter($(this).children('img').attr('alt'));
+    const altText = capitaliseFirstCharacter(
+      $(this).children('img').attr('alt')
+    );
     // add a new tooltip element using this text
     $('<p class="tooltip" style="display:none"></p>')
       .text(altText)
       .appendTo($(this))
       .fadeIn('slow');
   });
-  weatherEl.on('mouseleave', '.img-wrap', function () {
+  jQueryWeatherEl.on('mouseleave', '.img-wrap', function () {
     // remove this tooltip element
     $(this).children('.tooltip').remove();
   });

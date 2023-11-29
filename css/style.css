@@ -1,11 +1,11 @@
 /**** VARIABLES ****/
 :root {
-  --primary: #00BCD4;
-  --primaryMuted: #B0BEC5;
-  --secondary: #FFFF00;
+  --primary: #00bcd4;
+  --primaryMuted: #b0bec5;
+  --secondary: #ffff00;
   --text: #333;
-  --background: #FFFFFF;
-  --highlight: #FFEB3B;
+  --background: #ffffff;
+  --highlight: #ffeb3b;
 }
 
 /** CoLoUr IdEaS... **/
@@ -54,7 +54,7 @@
 /**** RESETS ****/
 * {
   margin: 0;
-  padding:0;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -73,7 +73,8 @@ a {
 }
 
 /**** GLOBAL CLASSES ****/
-.row, .column {
+.row,
+.column {
   display: flex;
 }
 
@@ -125,7 +126,8 @@ header {
   margin-bottom: 20px;
 }
 
-header h3, header nav i {
+header h3,
+header nav i {
   color: var(--secondary);
 }
 
@@ -157,7 +159,7 @@ section.search-panel {
   padding: 7px 15px;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
-  border:2px solid var(--primary);
+  border: 2px solid var(--primary);
   outline: none;
 }
 
@@ -184,7 +186,7 @@ section.search-panel {
   border-bottom-right-radius: 10px;
   background: var(--primary);
   color: var(--secondary);
-  border:0;
+  border: 0;
 }
 
 .search-panel form button:hover {
@@ -208,7 +210,7 @@ section.search-panel {
   margin-right: 4px;
 }
 
-.search-panel form .radio-item input[type="radio"]:checked {
+.search-panel form .radio-item input[type='radio']:checked {
   accent-color: #71c9d5;
 }
 
@@ -218,11 +220,11 @@ section.search-panel {
 }
 
 .search-panel .recent-search-header {
-  color:darkgray;
-  text-align:center;
-  margin-top:10px;
-  margin-bottom:5px;
-  font-size:1.2rem;
+  color: darkgray;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 1.2rem;
 }
 
 .search-history button.history-button {
@@ -234,7 +236,8 @@ section.search-panel {
   background: none;
   color: darkgray;
   cursor: pointer;
-  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  transition: color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out;
 }
 
 /* cute way of adding a degree of tactileness or feedback when button is clicked */
@@ -298,7 +301,8 @@ main section.weather {
   gap: 10px;
 }
 
-.current .overview h1, .current .overview p.temp {
+.current .overview h1,
+.current .overview p.temp {
   font-size: 2rem;
 }
 
@@ -342,15 +346,15 @@ main section.weather {
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: 0.6fr 1fr;
   text-align: center;
-  gap:5px;
-  overflow-y:hidden;
+  gap: 5px;
+  overflow-y: hidden;
 }
 
 .days div.day-tab {
   grid-column: span 1;
   grid-row: 2/3;
   padding: 10px;
-  cursor:pointer;
+  cursor: pointer;
 
   /* border: 1px solid #cacaca;
   background: #F0F0F0;
@@ -407,8 +411,8 @@ main section.weather {
 }
 
 .day-breakdown div.day {
-  display:grid;
-  grid-template-columns: repeat(9,1fr);
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
 }
 
 .day-breakdown .day div.hour {
@@ -448,17 +452,17 @@ main section.weather {
 
 .day-breakdown .day div.hour-details {
   justify-content: end;
-  text-align:left;
+  text-align: left;
   padding-left: 7px;
   background: var(--background);
   /* border-left:none; */
   color: #999;
-  min-width:80px;
+  min-width: 80px;
 }
 
 .attribution {
   color: darkgray;
-  margin-top:10px;
+  margin-top: 10px;
 }
 
 /*** FOOTER ***/
@@ -476,13 +480,14 @@ footer p {
 /*** EXTRAS ***/
 
 /* These arrow icons are mobile only features, so need to hide them on desktop */
-#collapse-down-arrow, #collapse-up-arrow {
+#collapse-down-arrow,
+#collapse-up-arrow {
   display: none;
 }
 
 /* The following two are for the forecast hour img tooltips */
 .img-wrap {
-  position:relative;
+  position: relative;
 }
 .tooltip {
   position: absolute;
@@ -490,8 +495,8 @@ footer p {
   left: 50%;
   transform: translate(-50%, -10px);
   z-index: 9999;
-  background-color: #007BFF;
-  color: #FFFF00;
+  background-color: #007bff;
+  color: #ffff00;
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 14px;
@@ -501,7 +506,7 @@ footer p {
 
 /* wind wrap */
 .wind-wrap {
-  height:40px;
+  height: 40px;
   position: relative;
   font-size: 1rem;
 }
@@ -509,27 +514,26 @@ footer p {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   z-index: 2;
-  color:#FFFFFF;
+  color: #ffffff;
 }
 .wind-wrap img {
   position: absolute;
   left: 50%;
-  top:52%;
+  top: 52%;
   z-index: 1;
   height: 50px;
   /* to black */
   /* filter: invert(1); */
   /* or to blue */
   /* filter: invert(0.5) sepia(1) saturate(5) hue-rotate(180deg); */
-  filter: invert(0.3)
+  filter: invert(0.3);
 }
 
 /**** MOBILE ****/
 
 @media only screen and (max-width: 480px) {
-
   body {
     overflow-x: hidden;
   }
@@ -544,7 +548,7 @@ footer p {
   }
 
   section.search-panel {
-    gap:15px;
+    gap: 15px;
   }
 
   .search-panel form input.search {
@@ -584,19 +588,21 @@ footer p {
   .search-panel .search-history .history-button.expanded {
     display: block;
   }
-  #collapse-down-arrow, #collapse-up-arrow.expanded {
+  #collapse-down-arrow,
+  #collapse-up-arrow.expanded {
     display: inline;
   }
-  #collapse-up-arrow, #collapse-down-arrow.expanded {
-    display:none;
+  #collapse-up-arrow,
+  #collapse-down-arrow.expanded {
+    display: none;
   }
 
   .weather h2 {
     text-align: center;
-    font-size:1.2rem;
+    font-size: 1.2rem;
   }
   .weather h2 .location {
-    display:block;
+    display: block;
     font-size: 2rem;
     padding-top: 10px;
   }
@@ -608,8 +614,8 @@ footer p {
 
   .current .overview {
     /* margin: 0 20px; */
-    gap:15px;
-    padding-bottom:15px;
+    gap: 15px;
+    padding-bottom: 15px;
     margin: 0 20px;
   }
   .current .overview p.temp {
@@ -617,7 +623,7 @@ footer p {
   }
 
   .current .overview .img {
-    width:200px;
+    width: 200px;
   }
 
   .current table {
@@ -629,7 +635,7 @@ footer p {
   }
 
   .weather section.forecast {
-    border:none;
+    border: none;
     padding-left: 5px;
     padding-right: 5px;
   }
@@ -661,17 +667,17 @@ footer p {
   .days .day-tab.selected {
     width: 150px;
     background: #fdea7d;
-    padding-top:15px;
+    padding-top: 15px;
   }
 
   .forecast div.day-breakdown {
-    margin-bottom:20px;
+    margin-bottom: 20px;
   }
 
   .day-breakdown h3.day-date {
-    padding-left:10px;
+    padding-left: 10px;
     padding-bottom: 0;
-    padding-top:10px;
+    padding-top: 10px;
   }
 
   .forecast .day-breakdown {
@@ -710,6 +716,4 @@ footer p {
   /* .day-breakdown div.day {
     padding-bottom: 20px;
   } */
-
-
 }
