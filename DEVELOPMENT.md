@@ -1,18 +1,34 @@
+<a name="top"></a>
+
 # Development
+
+## Description
 
 So I want to document my thoughts and experiences when working on this app in a cohesive way so that I can come back to this app and understand how I did a lot of the stuff in it. I think some kind of blog post would be suitable. Or maybe just a separate md file, which I've now created.
 
-I'll deal with this later (it's now New Year's Eve 2022).
+## Table of contents
 
-![screenshot of console output](img/ss1.png)
+- [New Year's Eve 2022](#new-years-eve-2022)
+- [Jan 3 2023](#jan-3-2023)
+- [Nov 30 2023](#30-nov-2023)
 
-![screenshot of console output](img/ss2.png)
+## New Year's Eve 2022
 
-More details (better description, fuller instructions including screenshots, credit section) later.
+Some screenshots at different points of development
 
-**Update 28 Dec**: after doing some more work, particularly adding a 'Now' section, the look of the app has changed to something below.
+![screenshot of app 1](img/ss1.png)
 
-![screenshot of console output](img/ss3.png)
+![screenshot of app 2](img/ss2.png)
+
+28 Dec 2022:
+
+![screenshot of app 3](img/ss3.png)
+
+Jan 4 - Nov 30
+
+![screenshot of app 4](img/ss_30nov2023.png)
+
+### Summary of things learnt
 
 I've spent a ton of work on this to be honest but I've learnt a lot. It's really important that I document how I did several things, if only so that I can look back and understand things myself. Off the top of my head, the things that stand out are:
 
@@ -31,6 +47,8 @@ On top of that
 - spending a bunch of time trying to get things to look a certain way, or position themselves how I want them to
 - spending an even greater amount of time on colour schemes and layout (struggled big time here tbh)
 - more practice with jQuery and taking advantage of how it makes some things easier, particularly traversal, looping and fetching API data
+
+## Jan 3 2023
 
 Things I learnt while working on this app...
 
@@ -90,3 +108,119 @@ To do a local clock or timer, I had to do a few things:
 It works correctly based on my time, but my local time is UTC+0000, so not sure if it would work the same if a user from a different timezone were to use it. Maybe I should look into that...
 
 ### Global CSS rules
+
+Hmm, what did I want to mention about Global CSS rules I wonder?
+
+## 30 Nov 2023
+
+Revisiting this app to try and gain some practise with JS and CSS. The idea is to **refactor the code**.
+
+Phase 1 involves:
+
+- converting the code from using jQuery to vanilla JS,
+- using ES6 principles (e.g. no `var` keywords), and
+- just trying to make the code more robust, efficient, cleaner (e.g. using async/await instead of nested promises, using things like array methods more often, reducing repeated code).
+
+I also tried moving some of the functions from `app.js` to `utils.js`. This involved having to modify the `<script>` tag in `index.html` to include the attribute `type="module"`, and using `import` and `export` appropriately.
+
+This is where I really should mention the things I learnt from this first phase. In particular how to handle the logic in event listeners. I'll give an example.
+
+### The two event listeners on the Search History element
+
+In jQuery, this was simple:
+
+```
+  searchHistoryEl.on('click', 'button', function () {
+    // do stuff
+  });
+
+  searchHistoryEl.on('click', '.close', function (event) {
+    // Stop the other event in the button from happening
+    event.stopPropagation();
+
+    // do stuff
+  });
+```
+
+But in vanilla JS, I had issues with stopping propagation and other child elements obfuscating the element that I wanted to click. For instance, if I added this for the event listener on just the button:
+
+```
+  searchHistoryEl.addEventListener('click', function (event) {
+    if (event.target.tagName === 'BUTTON') {
+      // do stuff
+    }
+  })
+```
+
+this won't really work because the button has other child elements (`span`'s for the text) that was blocking it. So, one solution was instead to do:
+
+```
+  searchHistoryEl.addEventListener('click', function (event) {
+    const searchHistoryButton = event.target.closest('.history-button');
+    if (searchHistoryButton) {
+      // do stuff
+    }
+  })
+```
+
+`closest()` works by going up from the element that you clicked until it finds something that matches. So, if I clicked on the span, it would work its way up one step until it found the parent button, and that would be the button element.
+
+But there was still some issues with stopping propagation, so in the end I just combined the two event listeners into one. This made things easier as then I could deal with the logic in one place and not worry that one click might trigger the wrong event listener.
+
+### Other thoughts
+
+A lot of the refactoring involved minor changes like:
+
+- `.val()` => `.value`
+- `.text('blah')` => `.textContent = 'blah'`
+- `.addClass('forecast column')` => `.classList.add('forecast', 'column')`
+- `.attr('id', 'some-id')` => `.id = 'some-id'`
+
+Others required more thought, like instead of using jQuery's `siblings()` or `parent()` or `children()` to easily traverse elements, I instead had to use `querySelectorAll()` and `forEach` quite a bit, e.g.:
+
+```
+document.querySelectorAll('.day-breakdown').forEach(dayBreakdown => {
+  // do stuff
+})
+
+Array.from(forecastEl.children).forEach(child => {
+  // do stuff
+})
+```
+
+I suppose one interesting thing was `insertAdjacentHTML`. So, instead of using `.innerHTML = 'some new HTML'`, which basically overwrites the existing inner HTML of the element, if we instead use `.insertAdjacentHTML('beforeend', 'some new HTML')` we can add some HTML to what is already there. There's also other places you can add the HTML - [this link](https://dev.to/jeannienguyen/insertadjacenthtml-vs-innerhtml-4epd) explains it well.
+
+Oh yeah, another bit of code I liked was going from this:
+
+```
+  recentSearches = JSON.parse(localStorage.getItem('weather_search_history'));
+  if (recentSearches === null) {
+    recentSearches = [];
+    return;
+  }
+```
+
+to this:
+
+```
+  recentSearches = JSON.parse(localStorage.getItem('weather_search_history')) || [];
+```
+
+I couldn't quite refactor two nifty functions/features - the tooltip and the autocomplete. The latter relied on the jQuery UI autocomplete thing. The former had this cool fadeIn going on for free. I could figure out a good CSS solution to this, but I'll leave it for now.
+
+### Conclusion
+
+A useful experience thus far about how to do some stuff in vanilla JS. Can't help but feel jQuery makes things a whole lot easier. I'm pretty sure I have more lines of code now even though I'm supposed to be improving the code!
+
+### Phase 2?
+
+Some possible things to do:
+
+- extricate jQuery and jQuery UI by refactoring the tooltip and autocomplete features. For the latter look into [Awesomeplete](https://projects.verou.me/awesomplete/).
+- completely improve the CSS. There's a lot I could do here. CSS variables. Layout. Maybe a cheeky light/dark mode?
+- some minor HTML stuff. I mean, I noticed that I may be using multiple `<h1>` elements - that's bad, people.
+- improve file structure / model / organisation? Right now, `app.js` is a big heap of chunky code that is hard to decipher. Maybe look into that comment highlighting thing in VSCode.
+
+<p align="right">
+  <a href="#top">Back to top</a>
+</p>

@@ -1,3 +1,12 @@
+import {
+  formatRecentSearchText,
+  secondsToReadableTimeShift,
+  getWindDirectionContext,
+  metresToKilometres,
+  convertMetersPerSecondToMilesPerHour,
+  capitaliseFirstCharacter,
+} from './utils.js';
+
 const apiKey = '0e8f67bf6ac0e37689d7edea5f37f808';
 const iconBaseURL = 'https://openweathermap.org/img/w/';
 const geocoderBaseURL = `https://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&limit=1&q=`;
@@ -11,79 +20,8 @@ const searchHistoryEl = document.querySelector('.search-history');
 // Initialise an array to help with local storage logic
 let recentSearches = [];
 
+// Initialise a globally accessible timer variable
 let intervalId;
-
-// Converts a time shift to be more readable, e.g. 19800 to '+0530', -18000 to '-0500'
-function secondsToReadableTimeShift(timeShiftInSeconds) {
-  const timeShiftInHours = timeShiftInSeconds / 3600;
-
-  // Convert the time shift from hours to hours and minutes
-  const hours = Math.floor(timeShiftInHours);
-  const minutes = Math.round((timeShiftInHours - hours) * 60);
-
-  // Format the time shift as a string with inline if statements and concatenation
-  const readableTimeShift =
-    (hours < 0 ? '-' : '+') +
-    (Math.abs(hours) < 10 ? '0' : '') +
-    Math.abs(hours) +
-    (minutes < 10 ? '0' : '') +
-    minutes;
-
-  return readableTimeShift;
-}
-
-function getWindDirectionContext(direction) {
-  switch (true) {
-    case direction >= 337.5 || direction < 22.5:
-      return 'North';
-    case direction >= 22.5 && direction < 67.5:
-      return 'Northeast';
-    case direction >= 67.5 && direction < 112.5:
-      return 'East';
-    case direction >= 112.5 && direction < 157.5:
-      return 'Southeast';
-    case direction >= 157.5 && direction < 202.5:
-      return 'South';
-    case direction >= 202.5 && direction < 247.5:
-      return 'Southwest';
-    case direction >= 247.5 && direction < 292.5:
-      return 'West';
-    case direction >= 292.5 && direction < 337.5:
-      return 'Northwest';
-    default:
-      return 'Invalid direction';
-  }
-}
-
-// Converts km to m, to at most one decimal place
-function metresToKilometres(valueInMetres) {
-  const valueInKilometres = valueInMetres / 1000;
-
-  if (Number.isInteger(valueInKilometres)) {
-    return valueInKilometres;
-  }
-
-  return Number(valueInKilometres.toFixed(1));
-}
-
-function convertMetersPerSecondToMilesPerHour(metersPerSecond) {
-  return metersPerSecond * 2.23693629;
-}
-
-function capitaliseFirstCharacter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-// Converts 'new york county,us' into 'New York County, US'
-function formatRecentSearchText(cityAndCode) {
-  const parts = cityAndCode.split(',');
-  const capitalisedCity = parts[0]
-    .split(' ')
-    .map((word) => word[0].toUpperCase() + word.slice(1))
-    .join(' ');
-
-  return `${capitalisedCity}, ${parts[1].toUpperCase()}`;
-}
 
 // Sets the height of every temperature element in forecast breakdown
 // relative to its parent div, based on the min and max temp for that day
