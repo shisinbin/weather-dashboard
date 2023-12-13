@@ -21,7 +21,7 @@ const searchHistoryEl = document.querySelector('.search-history');
 let recentSearches = [];
 
 // Initialise a globally accessible timer variable
-let intervalId;
+let timer;
 
 // Sets the height of every temperature element in forecast breakdown
 // relative to its parent div, based on the min and max temp for that day
@@ -168,22 +168,22 @@ function showCurrentWeather(weatherObj) {
     .utcOffset(weatherObj.timezone / 60)
     .utcOffset();
 
-  clearInterval(intervalId);
+  // Clear previous timer, if there was one
+  clearInterval(timer);
 
   // Handles showing the formatted time in clock element
-  function updateClock() {
+  const updateClock = function () {
     const currentTime = moment().utcOffset(timezoneOffset);
     const timeString = currentTime.format('D MMM YYYY, HH:mm:ss');
     const clockEl = document.getElementById('clock');
     if (clockEl) {
       clockEl.textContent = timeString;
     }
-  }
-
-  updateClock(); // Run immediately once
+  };
 
   // Start the timer, which runs updateClock every second
-  intervalId = setInterval(updateClock, 1000);
+  updateClock();
+  timer = setInterval(updateClock, 1000);
 
   // Creating map options
   const { lat, lon } = weatherObj;
@@ -835,7 +835,7 @@ function init() {
         );
 
         if (recentSearches.length === 0) {
-          clearInterval(intervalId);
+          clearInterval(timer);
           localStorage.removeItem('weather_search_history');
           weatherEl.innerHTML = '';
           weatherEl.insertAdjacentHTML(
