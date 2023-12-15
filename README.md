@@ -18,7 +18,7 @@ While working on this project, I gained valuable experience in front-end develop
 
 To access the app, navigate to the link below in a browser on a device that supports a wide layout (or alternatively on mobile).
 
-https://cozy-sprinkles-a45830.netlify.app/
+https://chipper-sunflower-aae134.netlify.app/
 
 ### Searching for cities
 
