@@ -934,7 +934,7 @@ function addAutocompleteFeature() {
         },
         success: function (result) {
           // create an array of objects with label and value properties from the API response
-          const results = result.features.map(function (feature) {
+          const results = result.features.map((feature) => {
             return {
               label: `${feature.properties.city}, ${feature.properties.country}`,
               value: `${feature.properties.city},${feature.properties.country_code}`,
@@ -943,7 +943,7 @@ function addAutocompleteFeature() {
           // console.log(results);
 
           // some rejigging to only include valid city results
-          const filteredResults = results.filter(function (result) {
+          const filteredResults = results.filter((result) => {
             return (
               !result.label.includes('undefined') &&
               !result.value.includes('undefined')
@@ -953,16 +953,15 @@ function addAutocompleteFeature() {
           // console.log(filteredResults);
 
           // drop duplicates
-          const uniqueResults = filteredResults.filter(function (
-            result,
-            index
-          ) {
-            return (
-              filteredResults.findIndex(function (otherResult) {
-                return otherResult.label === result.label;
-              }) === index
-            );
-          });
+          const uniqueResults = filteredResults.filter(
+            (result, index) => {
+              return (
+                filteredResults.findIndex((otherResult) => {
+                  return otherResult.label === result.label;
+                }) === index
+              );
+            }
+          );
 
           // last bit of formatting to capitalize the country code
           uniqueResults.forEach((obj) => {
