@@ -11,6 +11,7 @@ So I want to document my thoughts and experiences when working on this app in a 
 - [New Year's Eve 2022](#new-years-eve-2022)
 - [Jan 3 2023](#jan-3-2023)
 - [Nov 30 2023](#30-nov-2023)
+- [Dec 17 2023](#17-dec-2023)
 
 ## New Year's Eve 2022
 
@@ -220,6 +221,178 @@ Some possible things to do:
 - completely improve the CSS. There's a lot I could do here. CSS variables. Layout. Maybe a cheeky light/dark mode?
 - some minor HTML stuff. I mean, I noticed that I may be using multiple `<h1>` elements - that's bad, people.
 - improve file structure / model / organisation? Right now, `app.js` is a big heap of chunky code that is hard to decipher. Maybe look into that comment highlighting thing in VSCode.
+
+## 17 Dec 2023
+
+Since the last post, I've done a few things:
+
+1. Tidied up the `timer` logic slightly. All it really involved was:
+
+   - `intervalID` -> `timer` (changed a variable name)
+   - `function updateClock()` -> `const updateClock = function ()` (use a function expression rather than declaration)
+
+   I considered putting `clearInterval()` elsewhere as well, but it seemed reasonable enough to leave it close to just before creating a new interval.
+
+2. Made some of the code in the autocomplete feature more consistent with the rest of the code, i.e.:
+
+   - `.filter(function (result) { /// } )` -> `.filter(result => { /// })`
+
+3. Deployed the vanilla branch using Netlify.
+
+4. Added the `defer` attribute to script tags so that they are downloaded asynchronously. Also moved them to the `<head>`.
+
+5. Added favicons.
+
+6. I also pulled out some commented out code from `index.html` (that I guess I used when developing the layout), because it made things look cleaner. Here is that code that I pulled out, that I'll probably put somewhere else later:
+
+   ```
+        <section class="weather column">
+          <section class="current">
+            <div class="overview column">
+              <h1>Now</h1>
+              <p class="temp">32°C</p>
+              <p>Overcast</p>
+              <p>Feels like: 30°C</p>
+              <p>Wind: 10 mph from Northwest</p>
+              <img
+                src="http://openweathermap.org/img/wn/13d@2x.png"
+                width="50px"
+                height="50px"
+                alt=""
+              />
+            </div>
+
+            <table>
+              <tr>
+                <td><strong>Current time</strong></td>
+                <td>12:42:04</td>
+              </tr>
+              <tr>
+                <td><strong>Visibility</strong></td>
+                <td>1000 km</td>
+              </tr>
+              <tr>
+                <td><strong>Pressure</strong></td>
+                <td>1000 hPa</td>
+              </tr>
+              <tr>
+                <td><strong>Sunrise</strong></td>
+                <td>06:23</td>
+              </tr>
+              <tr>
+                <td><strong>Sunset</strong></td>
+                <td>16:47</td>
+              </tr>
+            </table>
+
+            <div class="map"></div>
+          </section>
+
+          <section class="forecast column">
+            <h1>Forecast</h1>
+            <div class="row days">
+              <div class="day-tab column selected" id="tab-28">
+                <p class="f-1">Wed 28</p>
+                <div class="tab-details row align-center">
+                  <div class="f-1">
+                    <img
+                      src="https://openweathermap.org/img/w/10d.png"
+                      alt="Light rain"
+                      width="50px"
+                      height="50px"
+                    />
+                  </div>
+                  <div class="column text-center f-1">
+                    <p class="max">11°</p>
+                    <p class="min"><small>9°</small></p>
+                  </div>
+                </div>
+                <p class="tab-description f-1">Light rain</p>
+              </div>
+
+              <div class="day-tab column" id="tab-29">
+                <p class="f-1">Thu 29</p>
+                <div class="tab-details row align-center">
+                  <div class="f-1">
+                    <img
+                      src="https://openweathermap.org/img/w/04d.png"
+                      alt="Broken clouds"
+                      width="50px"
+                      height="50px"
+                    />
+                  </div>
+                  <div class="column text-center f-1">
+                    <p class="max">9°</p>
+                    <p class="min"><small>6°</small></p>
+                  </div>
+                </div>
+                <p class="tab-description f-1 hide">Broken clouds</p>
+              </div>
+
+              <div class="day-tab column" id="tab-30">
+                <p class="f-1">Fri 30</p>
+                <div class="tab-details row align-center">
+                  <div class="f-1">
+                    <img
+                      src="https://openweathermap.org/img/w/10d.png"
+                      alt="Light rain"
+                      width="50px"
+                      height="50px"
+                    />
+                  </div>
+                  <div class="column text-center f-1">
+                    <p class="max">13°</p>
+                    <p class="min"><small>7°</small></p>
+                  </div>
+                </div>
+                <p class="tab-description f-1 hide">Light rain</p>
+              </div>
+
+              <div class="day-tab column" id="tab-31">
+                <p class="f-1">Sat 31</p>
+                <div class="tab-details row align-center">
+                  <div class="f-1">
+                    <img
+                      src="https://openweathermap.org/img/w/04d.png"
+                      alt="Overcast clouds"
+                      width="50px"
+                      height="50px"
+                    />
+                  </div>
+                  <div class="column text-center f-1">
+                    <p class="max">12°</p>
+                    <p class="min"><small>10°</small></p>
+                  </div>
+                </div>
+                <p class="tab-description f-1 hide">Overcast clouds</p>
+              </div>
+
+              <div class="day-tab column" id="tab-1">
+                <p class="f-1">Sun 1</p>
+                <div class="tab-details row align-center">
+                  <div class="f-1">
+                    <img
+                      src="https://openweathermap.org/img/w/10d.png"
+                      alt="Light rain"
+                      width="50px"
+                      height="50px"
+                    />
+                  </div>
+                  <div class="column text-center f-1">
+                    <p class="max">13°</p>
+                    <p class="min"><small>9°</small></p>
+                  </div>
+                </div>
+                <p class="tab-description f-1 hide">Light rain</p>
+              </div>
+            </div>
+          </section>
+
+          <div class="feedback">
+            <p>Use the search bar to get started.</p>
+          </div>
+        </section>
+   ```
 
 <p align="right">
   <a href="#top">Back to top</a>

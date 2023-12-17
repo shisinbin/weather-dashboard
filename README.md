@@ -133,7 +133,8 @@ Other credits:
 - [Building a Weather App using JavaScript & CSS](https://medium.com/@arifkabir/building-a-weather-app-using-javascript-css-1f05f160a3b0) for cool relevant design ideas
 - [Shachee Swadia - A Beginner's Guide to Creating a Map Using Leaflet.js \[sitepoint\]](https://www.sitepoint.com/leaflet-create-map-beginner-guide/)
 - [OpenStreetMap](https://www.openstreetmap.org/) used by Leaflet for the map
-- [jQuery Themes]
+- [How to Improve Page Speed with `async` and `defer` - freecodecamp.org](https://www.freecodecamp.org/news/javascript-performance-async-defer/) to help understand different ways to load JavaScript files and their benefits
+- [Weather Favicon](https://favicon.io/emoji-favicons/sun-behind-rain-cloud) for adding a favicon to the app
 
 <!-- ## Documentation
 
