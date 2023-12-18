@@ -29,6 +29,10 @@ Jan 4 - Nov 30
 
 ![screenshot of app 4](img/ss_30nov2023.png)
 
+Dec 18
+
+![screenshot of app 5](img/ss_18dec2023.png)
+
 ### Summary of things learnt
 
 I've spent a ton of work on this to be honest but I've learnt a lot. It's really important that I document how I did several things, if only so that I can look back and understand things myself. Off the top of my head, the things that stand out are:
@@ -393,6 +397,8 @@ Since the last post, I've done a few things:
           </div>
         </section>
    ```
+
+7. Also, aimlessly messed around with the CSS - added color variables (used HSL rather than #'s), cleaned up some of the flex stuff, and cut out some of the comments.
 
 <p align="right">
   <a href="#top">Back to top</a>

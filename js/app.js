@@ -553,9 +553,9 @@ function showWeather(weatherDetails) {
       'beforeend',
       `
       <div class="day-tab column" id="tab-${thisDay.dateDay}">
-        <p class="f-1">${thisDay.dateShort}</p>
-        <div class="tab-details row align-center">
-          <div class="f-1">
+        <p>${thisDay.dateShort}</p>
+        <div class="tab-details">
+          <div>
             <img
               src="${thisDay.iconurl}"
               alt="${thisDay.description}"
@@ -563,14 +563,14 @@ function showWeather(weatherDetails) {
               height="50px"
             />
           </div>
-          <div class="column text-center f-1">
+          <div class="column text-center">
             <p class="max">${Math.round(highestTemp)}°</p>
             <p class="min"><small>${Math.round(
               lowestTemp
             )}°</small></p>
           </div>
         </div>
-        <p class="tab-description f-1 hide">${thisDay.description}</p>
+        <p class="tab-description hide">${thisDay.description}</p>
       </div>
     `
     );
