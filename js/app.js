@@ -193,24 +193,18 @@ function showCurrentWeather(weatherObj) {
   };
 
   // Creating a map object
-  const map = new L.map('map', mapOptions);
+  const map = L.map('map', mapOptions);
 
-  // Creating a Layer object
-  const layer = new L.TileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    {
-      maxZoom: 15,
-      minZoom: 3,
-      attribution:
-        'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-    }
-  );
+  // Add layer to map
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 15,
+    minZoom: 3,
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map);
 
-  // Adding layer to the map
-  map.addLayer(layer);
-
-  const marker = new L.marker([lat, lon]);
-  marker.addTo(map);
+  // Add a marker to map
+  L.marker([lat, lon]).addTo(map);
 }
 
 // Update recentSearches array with successful search, and use it to update local storage
