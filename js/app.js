@@ -93,6 +93,23 @@ function noResultsFound() {
   // document.querySelector('.search').select(); // not mobile-friendly
 }
 
+// Displays a simple map, given location coordinates
+function showMap(coords) {
+  // Create a map object
+  const map = L.map('map').setView(coords, 6);
+
+  // Add layer to map
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 15,
+    minZoom: 3,
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map);
+
+  // Add a marker to map
+  L.marker(coords).addTo(map);
+}
+
 // Inject the current weather section using the first forecast object
 function showCurrentWeather(weatherObj) {
   const sunrise = moment
@@ -185,26 +202,9 @@ function showCurrentWeather(weatherObj) {
   updateClock();
   timer = setInterval(updateClock, 1000);
 
-  // Creating map options
-  const { lat, lon } = weatherObj;
-  const mapOptions = {
-    center: [lat, lon],
-    zoom: 6,
-  };
-
-  // Creating a map object
-  const map = L.map('map', mapOptions);
-
-  // Add layer to map
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 15,
-    minZoom: 3,
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  }).addTo(map);
-
-  // Add a marker to map
-  L.marker([lat, lon]).addTo(map);
+  // Show a map of search location
+  const coords = [weatherObj.lat, weatherObj.lon];
+  showMap(coords);
 }
 
 // Update recentSearches array with successful search, and use it to update local storage
