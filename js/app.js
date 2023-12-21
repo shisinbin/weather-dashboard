@@ -93,8 +93,10 @@ function noResultsFound() {
   // document.querySelector('.search').select(); // not mobile-friendly
 }
 
-// Displays a simple map, given location coordinates
-function showMap(coords) {
+// Displays a simple map, given location's coordinates
+function showMap(latitude, longitude) {
+  const coords = [latitude, longitude];
+
   // Create a map object
   const map = L.map('map').setView(coords, 6);
 
@@ -108,6 +110,35 @@ function showMap(coords) {
 
   // Add a marker to map
   L.marker(coords).addTo(map);
+}
+
+// Displays a clock, given a timestamp (unix, UTC),
+// and the timezone (shift in seconds from UTC)
+function showClock(timestamp, timezone) {
+  const unixMoment = moment.unix(timestamp);
+
+  // Work out the UTC offset, in minutes, of the forecast timestamp
+  const timezoneOffset = unixMoment
+    .utcOffset(timezone / 60)
+    .utcOffset();
+
+  // Clear previous timer, if there was one
+  clearInterval(timer);
+
+  // Handles showing the formatted time in clock element
+  const updateClock = function (clockEl) {
+    const currentTime = moment().utcOffset(timezoneOffset);
+    const timeString = currentTime.format('D MMM YYYY, HH:mm:ss');
+    clockEl.textContent = timeString;
+  };
+
+  const clockEl = document.getElementById('clock');
+  // An overly cautious check
+  if (clockEl) {
+    // Start the timer, which runs updateClock every second
+    updateClock(clockEl);
+    timer = setInterval(() => updateClock(clockEl), 1000);
+  }
 }
 
 // Inject the current weather section using the first forecast object
@@ -179,32 +210,11 @@ function showCurrentWeather(weatherObj) {
 
   weatherEl.appendChild(currentEl);
 
-  // Work out the UTC offset, in minutes, of the forecast timestamp
-  const timestamp = moment.unix(weatherObj.timestamp);
-  const timezoneOffset = timestamp
-    .utcOffset(weatherObj.timezone / 60)
-    .utcOffset();
+  // Show a clock for location's local time
+  showClock(weatherObj.timestamp, weatherObj.timezone);
 
-  // Clear previous timer, if there was one
-  clearInterval(timer);
-
-  // Handles showing the formatted time in clock element
-  const updateClock = function () {
-    const currentTime = moment().utcOffset(timezoneOffset);
-    const timeString = currentTime.format('D MMM YYYY, HH:mm:ss');
-    const clockEl = document.getElementById('clock');
-    if (clockEl) {
-      clockEl.textContent = timeString;
-    }
-  };
-
-  // Start the timer, which runs updateClock every second
-  updateClock();
-  timer = setInterval(updateClock, 1000);
-
-  // Show a map of search location
-  const coords = [weatherObj.lat, weatherObj.lon];
-  showMap(coords);
+  // Show a map of location
+  showMap(weatherObj.lat, weatherObj.lon);
 }
 
 // Update recentSearches array with successful search, and use it to update local storage
